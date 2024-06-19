@@ -12,6 +12,9 @@ from steps.step5_report_generator import Node as Node5
 class ModelStateManager:
     def __init__(self, db_info) -> None:
         self.db_info = db_info
+        self.create_graph()
+
+    def create_graph(self):
         self.step1 = Node1(self.db_info)
         self.step2 = Node2()
         self.step3 = Node3()
