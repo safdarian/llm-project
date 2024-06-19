@@ -37,5 +37,10 @@ class ModelStateManager:
 
 
 if __name__ == "__main__":
-    sm = ModelStateManager(db_info="ok")
-    print(sm.execute(question="hello"))
+    question = "students over 16 years old"
+    db_schema = """Student(id, name, age)"""
+    sm = ModelStateManager(db_info={"schema" : db_schema})
+    result = sm.execute(question=question)
+    print(result)
+    print("-" * 50)
+    print(result["text2sql_results"])
