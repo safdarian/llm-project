@@ -7,7 +7,7 @@ class Node:
         pass
 
     def forward(self, input_data: State):
-        return {"test": "ok"}
+        return input_data
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         return self.forward(*args, **kwds)
