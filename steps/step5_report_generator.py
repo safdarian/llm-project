@@ -6,8 +6,8 @@ class Node:
     def __init__(self) -> None:
         pass
 
-    def forward(self, input_data: State):
-        return input_data
+    def forward(self, state: State):
+        return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         return self.forward(*args, **kwds)
