@@ -22,11 +22,11 @@ class ModelStateManager:
         self.step5 = Node5()
         
         self.graph = StateGraph(State)
-        self.graph.add_node("text2sql", self.step1.forward)
-        self.graph.add_node("analytics", self.step2.forward)
-        self.graph.add_node("plot", self.step3.forward)
-        self.graph.add_node("story", self.step4.forward)
-        self.graph.add_node("report", self.step5.forward)
+        self.graph.add_node("text2sql", self.step1)
+        self.graph.add_node("analytics", self.step2)
+        self.graph.add_node("plot", self.step3)
+        self.graph.add_node("story", self.step4)
+        self.graph.add_node("report", self.step5)
         self.graph.set_entry_point("text2sql")
 
         self.graph.add_edge("text2sql", "analytics")
