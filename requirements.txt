@@ -2,3 +2,6 @@ langgraph
 langchain
 httpx
 langchain_together
+matplotlib
+fastapi
+uvicorn
