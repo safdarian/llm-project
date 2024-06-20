@@ -1,5 +1,5 @@
 from typing import Any
-from utils import State, ConfigManager
+from utils import State, ConfigManager, LLM
 from langchain_together import Together
 import copy
 import re
@@ -9,7 +9,7 @@ class Node:
     def __init__(self, db_info) -> None:
         self.config = ConfigManager()
         self.db_info = db_info
-        self.llm = Together(model="meta-llama/Llama-3-8b-chat-hf", together_api_key=self.config["togetherAI"])
+        self.llm = LLM("togetherAI")
     def forward(self, input_data: State):
         question = input_data.get("question")
         template = """according to this database schema:
@@ -19,7 +19,7 @@ class Node:
         put answer in this format:
         ```sql query```"""
         
-        answer = self.llm.invoke(template.format(self.db_info["schema"], question))
+        answer = self.llm(template.format(self.db_info["schema"], question))
         if len(re.findall(r"```sql(.*)```", answer, re.DOTALL)) > 0:
             answer = re.findall(r"```sql(.*?)```", answer, re.DOTALL)[0].strip()
         ans_dict = copy.copy(input_data)
