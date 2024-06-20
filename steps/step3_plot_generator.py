@@ -16,7 +16,7 @@ class Node:
         pass
 
     def forward(self, state: State):
-        print(state)
+        #print(state)
         csv_file = state["text2sql_results"]["csv_path"]
         user_query = state["question"]
         plot_generator_results = {}
