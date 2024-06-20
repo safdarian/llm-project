@@ -19,6 +19,7 @@ class Node:
         print(state)
         csv_file = state["text2sql_results"]["csv_path"]
         user_query = state["question"]
+        plot_generator_results = {}
         df = pd.read_csv(csv_file)
         num_rows = len(df)
         columns = df.columns.tolist()
@@ -37,10 +38,10 @@ class Node:
             chain = prompt | self.llm.get_langchain_model() | parser
 
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text})
-            state["intro"] = result["intro"]
+            plot_generator_results["answer"] = result["intro"]
             #print("----------------------------------")
             #print("The inrto:",state["intro"])
-            state["plot_code"] = result["code"]
+            plot_generator_results["plot_code"] = result["code"]
             #print("The code:",state["plot_code"])
             #print("----------------------------------")
         else:
@@ -55,7 +56,7 @@ class Node:
             )
             chain = prompt | self.llm.get_langchain_model() | output_parser
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text, "firstRow_text": firstRow_text})
-            state["intro"] = result[0]
+            plot_generator_results["answer"] = result[0]
         #print(state)
         return state
     
