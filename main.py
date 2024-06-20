@@ -40,7 +40,7 @@ class ModelStateManager:
 
 
 if __name__ == "__main__":
-    question = "students over 16 years old"
+    question = "What is the total sales amount for each product?"
     db_schema = """Student(id, name, age)"""
     sm = ModelStateManager(db_info={"schema" : db_schema})
     result = sm.execute(question=question)
