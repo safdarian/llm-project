@@ -1,8 +1,9 @@
 from langgraph.graph import StateGraph, END
 from typing_extensions import Annotated, TypedDict
+from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableConfig
 import json
-from langchain_together import Together
+from langchain_together import Together, ChatTogether
 from typing import Any
 
 
@@ -25,6 +26,7 @@ class ConfigManager(dict):
 
 class LLM:
     def __init__(self, llm_source="togetherAI", additional_config={}) -> None:
+        self.llm_source = llm_source
         self.config = ConfigManager()
         self.additional_config = additional_config
         llm_init_map = {
@@ -38,11 +40,17 @@ class LLM:
         self.llm_init()
     
     def init_togetherAI(self):
-        self.llm = Together(model="meta-llama/Llama-3-8b-chat-hf", together_api_key=self.config["togetherAI"])
+        self.model_name = self.additional_config.get("model", "meta-llama/Llama-3-8b-chat-hf")
+        self.llm = Together(model=self.model_name, together_api_key=self.config["togetherAI"])
     
     def forward_togetherAI(self, prompt):
         return self.llm.invoke(prompt)
     
+
+    def get_langchain_model(self):
+        if self.llm_source == "togetherAI":
+            return ChatTogether(model=self.model_name, together_api_key=self.config["togetherAI"])
+
     def forward(self, prompt):
         return self.llm_forward(prompt=prompt)
 
