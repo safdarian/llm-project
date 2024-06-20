@@ -1,8 +1,8 @@
 from typing import Any
 from utils import State, ConfigManager, LLM
 from langchain_together import Together
-import copy
 import re
+import os
 
 
 class Node:
@@ -22,9 +22,12 @@ class Node:
         answer = self.llm(template.format(self.db_info["schema"], question))
         if len(re.findall(r"```sql(.*)```", answer, re.DOTALL)) > 0:
             answer = re.findall(r"```sql(.*?)```", answer, re.DOTALL)[0].strip()
-        ans_dict = copy.copy(input_data)
-        ans_dict["text2sql_results"] = answer
-        return ans_dict
+        # ans_dict = copy.copy(input_data)
+        csv_path = os.path.join("outputs", "business_sales_data_updated.csv")
+        input_data["text2sql_results"] = {"query": answer,
+                                          "csv_path": csv_path
+                                          }
+        return input_data
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         return self.forward(*args, **kwds)
