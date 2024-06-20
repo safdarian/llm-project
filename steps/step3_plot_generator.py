@@ -57,6 +57,7 @@ class Node:
             chain = prompt | self.llm.get_langchain_model() | output_parser
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text, "firstRow_text": firstRow_text})
             plot_generator_results["answer"] = result[0]
+        state["plot_generator_results"] = plot_generator_results
         #print(state)
         return state
     
