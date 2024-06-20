@@ -39,11 +39,11 @@ class Node:
 
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text})
             plot_generator_results["answer"] = result["intro"]
-            #print("----------------------------------")
+            print("----------------------------------")
             #print("The inrto:",state["intro"])
             plot_generator_results["plot_code"] = result["code"]
-            #print("The code:",state["plot_code"])
-            #print("----------------------------------")
+            print(plot_generator_results["plot_code"])
+            print("----------------------------------")
         else:
             #instruct_prompt = ""
             output_parser = StrOutputParser()
@@ -67,7 +67,7 @@ class Node:
 # Define your desired data structure.
 class TextAndCode(BaseModel):
     intro: str = Field(description="intro about the user query answer")
-    code: str = Field(description="code to generate one plot from the CSV file in 'csv_path' to answer the user query ")
+    code: str = Field(description="code to generate one plot from the CSV file in 'data.csv' to answer the user query ")
     
 if __name__ == "__main__":
     c = Node()
