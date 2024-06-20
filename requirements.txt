@@ -1,2 +1,4 @@
 langgraph
 langchain
+httpx
+langchain_together
