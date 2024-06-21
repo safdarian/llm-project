@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Project</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .answer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .answer img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .loading-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5em;
+        }
+        .loading-popup-hidden {
+            display: none;
+        }
+        h1{
+            font-size: x-large;
+        }
+    </style>
+    <script>
+        let isSubmitted = false;
+        document.addEventListener("DOMContentLoaded", function() {
+            if (isSubmitted) {
+                document.getElementById("loading-popup").className = "loading-popup";
+            }
+            else{
+                document.getElementById("loading-popup").className = "loading-popup-hidden";
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Ask a Question From Your Database</h1>
+        <form id="question_form" method="post">
+            <div class="form-group">
+                <label for="question">Your Question</label>
+                <input type="text" id="question" name="question" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+        {% if answer %}
+        <div class="answer">
+            <strong>Question:</strong> {{ question }}
+            <strong>Answer:</strong> {{ answer }}
+            <img src="{{ image }}" alt="Answer Image">
+        </div>
+        {% endif %}
+    </div>
+    <div id="loading-popup" class="loading-popup-hidden">
+        Loading...
+    </div>
+    <script>
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                isSubmitted = true;
+                document.getElementById("loading-popup").className = "loading-popup";
+                form.submit();
+            });
+    </script>
+</body>
+</html>
