@@ -26,7 +26,7 @@ async def post_form(request: Request, question: str = Form(...)):
     answer_dict = state_manager.execute(question=question)
     print(answer_dict)
     answer = answer_dict["plot_generator_results"]["answer"]
-    image_url = "/static/image.jpg"  # Path to the image
+    image_url = answer_dict["report_generation_results"]["plot_filename"]
     return templates.TemplateResponse("index.html", {"request": request, "answer": answer, "question": question, "image": image_url})
 
 if __name__ == "__main__":
