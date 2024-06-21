@@ -28,11 +28,7 @@ class Node:
             )
         chain = prompt | self.llm.get_langchain_model() | parser
         answer = chain.invoke({"user_prompt": question, "db_schema": self.db.get_schema()})
-        '''print("_"  * 50)
-        print("Answer",answer)
         query = answer["sql_query"]
-        print("Query",query)
-        print("_"  * 50)'''
         results = self.db.query(query)
         df = pd.DataFrame(results)
         df.to_csv('data.csv', index=False)
