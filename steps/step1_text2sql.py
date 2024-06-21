@@ -16,7 +16,9 @@ class Node:
     def __init__(self) -> None:
         self.config = ConfigManager()
         self.db = DBManager(self.config["database"])
-        self.llm = LLM("togetherAI")
+        #self.llm = LLM("togetherAI")
+        self.llm = LLM("openAI")
+        
     def forward(self, state: State):
         question = state.get("question")
         parser = JsonOutputParser(pydantic_object=TextToSQL)

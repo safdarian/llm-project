@@ -51,6 +51,7 @@ class LLM:
     def init_openAI(self):
         #self.model_name = self.additional_config.get("model", "gpt-4o")
         self.model_name = "gpt-4o"
+        
         self.llm = ChatOpenAI(
         model=self.model_name,
         temperature=0,

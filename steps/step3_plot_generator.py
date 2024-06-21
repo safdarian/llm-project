@@ -12,7 +12,8 @@ from langchain_core.output_parsers import StrOutputParser
 
 class Node:
     def __init__(self) -> None:
-        self.llm = LLM(llm_source="togetherAI", additional_config={"model": "meta-llama/Llama-3-8b-chat-hf"})
+        #self.llm = LLM(llm_source="togetherAI", additional_config={"model": "meta-llama/Llama-3-8b-chat-hf"})
+        self.llm = LLM("openAI")
         pass
 
     def forward(self, state: State):
@@ -66,8 +67,8 @@ class Node:
     
 # Define your desired data structure.
 class TextAndCode(BaseModel):
-    intro: str = Field(description="explanation and intro to the usey query and the plot that are the answers")
-    code: str = Field(description="code to generate one plot from the CSV file in 'data.csv' to answer the user query ")
+    intro: str = Field(description="short rephrased explanation and answer to user prompt to put as plot image header")
+    code: str = Field(description=" to generate one plot from the CSV file in 'data.csv' to answer the user query ")
     
 if __name__ == "__main__":
     c = Node()
