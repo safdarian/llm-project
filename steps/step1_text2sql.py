@@ -25,12 +25,12 @@ class Node:
         parser = JsonOutputParser(pydantic_object=TextToSQL)
         
         prompt = PromptTemplate(
-                template="Answer the user query.\n{format_instructions}\n{user_prompt}\n{db_schema}",
+                template="Answer the user query.\n{format_instructions}\n{user_prompt}\nThe Database schema of Tables and their first row values are: {db_schema}",
                 input_variables=["user_prompt" ,"db_schema"],
                 partial_variables={"format_instructions": parser.get_format_instructions()},
         )
         chain = prompt | self.llm | parser
-        answer = chain.invoke({"user_prompt": question, "db_schema": self.db.get_schema()})
+        answer = chain.invoke({"user_prompt": question, "db_schema": self.db.get_db_head()})
         query = answer["sql_query"]
         results = self.db.query(query)
         df = pd.DataFrame(results)

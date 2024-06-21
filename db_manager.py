@@ -36,7 +36,7 @@ class DBManager:
         head = ""
         for k, v in d.items():
             head += "Table Name: " + '"{}"'.format(k) + "\n"
-            head += f'Columns Name: ({", ".join(['"{}"'.format(item) for item in v])})\n'
+            head += 'Columns Name: ' + "(" + ", ".join(['"{}"'.format(item) for item in v]) + ")\n"
             q = f"SELECT * FROM {k} LIMIT 1"
             current = self.query(q)
             print(current)
