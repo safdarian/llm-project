@@ -1,7 +1,9 @@
 langgraph
 langchain
 httpx
-langchain_together
+langchain-together
+langchain-openai
 matplotlib
 fastapi
 uvicorn
+mysql-connector-python
