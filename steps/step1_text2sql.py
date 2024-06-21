@@ -16,8 +16,8 @@ class Node:
     def __init__(self) -> None:
         self.config = ConfigManager()
         self.db = DBManager(self.config["database"])
-        #self.llm = LLM("togetherAI")
-        self.llm = LLM("openAI")
+        self.llm = LLM("togetherAI")
+        #self.llm = LLM("openAI")
         #self.llm = LLM("localMLX")
         
     def forward(self, state: State):
@@ -28,7 +28,7 @@ class Node:
                 template="Answer the user query.\n{format_instructions}\n{user_prompt}\n{db_schema}",
                 input_variables=["user_prompt" ,"db_schema"],
                 partial_variables={"format_instructions": parser.get_format_instructions()},
-            )
+        )
         chain = prompt | self.llm | parser
         answer = chain.invoke({"user_prompt": question, "db_schema": self.db.get_schema()})
         query = answer["sql_query"]
