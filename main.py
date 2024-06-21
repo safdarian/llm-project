@@ -5,24 +5,21 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from state_manager import ModelStateManager
 
-
 state_manager = ModelStateManager()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-
-
 class QuestionForm(BaseModel):
     question: str
 
 @app.get("/", response_class=HTMLResponse)
-async def get_form(request: Request):
+def get_form(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "answer": None, "image": None})
 
 @app.post("/", response_class=HTMLResponse)
-async def post_form(request: Request, question: str = Form(...)):
+def post_form(request: Request, question: str = Form(...)):
     answer_dict = state_manager.execute(question=question)
     print(answer_dict)
     answer = answer_dict["plot_generator_results"]["answer"]
