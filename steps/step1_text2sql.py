@@ -5,6 +5,12 @@ import re
 import os
 from db_manager import DBManager
 import pandas as pd
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_together import Together
+import pandas as pd
+from langchain_core.output_parsers import StrOutputParser
 
 class Node:
     def __init__(self) -> None:
@@ -13,17 +19,20 @@ class Node:
         self.llm = LLM("togetherAI")
     def forward(self, state: State):
         question = state.get("question")
-        template = """according to this database schema:
-        {}
-        give me a query to answer this question:
-        {}
-        put answer in this format:
-        ```sql query```"""
+        parser = JsonOutputParser(pydantic_object=TextToSQL)
         
-        answer = self.llm(template.format(self.db.get_schema(), question))
-        if len(re.findall(r"```sql(.*)```", answer, re.DOTALL)) > 0:
-            query = re.findall(r"```sql(.*?)```", answer, re.DOTALL)[0].strip()
-        
+        prompt = PromptTemplate(
+                template="Answer the user query.\n{format_instructions}\n{user_prompt}\n{db_schema}",
+                input_variables=["user_prompt" ,"db_schema"],
+                partial_variables={"format_instructions": parser.get_format_instructions()},
+            )
+        chain = prompt | self.llm.get_langchain_model() | parser
+        answer = chain.invoke({"user_prompt": question, "db_schema": self.db.get_schema()})
+        '''print("_"  * 50)
+        print("Answer",answer)
+        query = answer["sql_query"]
+        print("Query",query)
+        print("_"  * 50)'''
         results = self.db.query(query)
         df = pd.DataFrame(results)
         df.to_csv('data.csv', index=False)
@@ -37,7 +46,9 @@ class Node:
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         return self.forward(*args, **kwds)
     
-
+class TextToSQL(BaseModel):
+    sql_query: str = Field(description="the sql query to be executed")
+    
 if __name__ == "__main__":
     c = Node()
     print(c())
