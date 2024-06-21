@@ -1,5 +1,6 @@
 langgraph
 langchain
+langchain_community
 httpx
 langchain-together
 langchain-openai

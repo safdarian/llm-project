@@ -45,7 +45,7 @@ class LLM:
     def init_localMLX(self): 
         from langchain_community.llms.mlx_pipeline import MLXPipeline
         from langchain_community.chat_models.mlx import ChatMLX
-        self.model_name = MLXPipeline.from_model_id("mlx-community/Phi-3-mini-128k-instruct-8bit")
+        self.model_name = MLXPipeline.from_model_id("mlx-community/Meta-Llama-3-8B-Instruct-8bit")
         self.llm = ChatMLX(llm=self.model_name)
     
     def init_openAI(self):
