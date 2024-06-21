@@ -1,7 +1,7 @@
 from langgraph.graph import StateGraph, END
 from typing_extensions import Annotated, TypedDict
 from langchain_core.runnables import RunnableConfig
-from utils import State
+from utils import State, ConfigManager
 from steps.step1_text2sql import Node as Node1
 from steps.step2_data_analytics import Node as Node2
 from steps.step3_plot_generator import Node as Node3
@@ -10,12 +10,11 @@ from steps.step5_report_generator import Node as Node5
 
 
 class ModelStateManager:
-    def __init__(self, db_info) -> None:
-        self.db_info = db_info
+    def __init__(self) -> None:
         self.create_graph()
 
     def create_graph(self):
-        self.step1 = Node1(self.db_info)
+        self.step1 = Node1()
         self.step2 = Node2()
         self.step3 = Node3()
         self.step4 = Node4()
@@ -40,10 +39,16 @@ class ModelStateManager:
 
 
 if __name__ == "__main__":
+    config = ConfigManager()
     question = "What is the total sales amount for each product?"
-    db_schema = """Student(id, name, age)"""
-    sm = ModelStateManager(db_info={"schema" : db_schema})
+    sm = ModelStateManager()
     result = sm.execute(question=question)
+    print("Whole State")
     print(result)
     print("-" * 50)
+    print("Text-to-SQL Results:")
     print(result["text2sql_results"])
+    print("-" * 50)
+    print("Plot Generator Results:")
+    print(result["plot_generator_results"])
+    
