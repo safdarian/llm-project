@@ -18,6 +18,7 @@ class Node:
         self.db = DBManager(self.config["database"])
         #self.llm = LLM("togetherAI")
         self.llm = LLM("openAI")
+        #self.llm = LLM("localMLX")
         
     def forward(self, state: State):
         question = state.get("question")
