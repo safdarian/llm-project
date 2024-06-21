@@ -12,7 +12,8 @@ from langchain_core.output_parsers import StrOutputParser
 
 class Node:
     def __init__(self) -> None:
-        self.llm = LLM(llm_source="togetherAI", additional_config={"model": "meta-llama/Llama-3-8b-chat-hf"})
+        #self.llm = LLM(llm_source="togetherAI", additional_config={"model": "meta-llama/Llama-3-8b-chat-hf"})
+        self.llm = LLM("openAI")
         pass
 
     def forward(self, state: State):
@@ -35,7 +36,7 @@ class Node:
                 partial_variables={"format_instructions": parser.get_format_instructions()},
             )
 
-            chain = prompt | self.llm.get_langchain_model() | parser
+            chain = prompt | self.llm | parser
 
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text})
             plot_generator_results["answer"] = result["intro"]
@@ -54,7 +55,7 @@ class Node:
                 input_variables=["user_prompt" ,"columns_text","firstRow_text"],
                 partial_variables={"format_instructions": parser.get_format_instructions()},
             )
-            chain = prompt | self.llm.get_langchain_model() | output_parser
+            chain = prompt | self.llm | output_parser
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text, "firstRow_text": firstRow_text})
             plot_generator_results["answer"] = result[0]
         state["plot_generator_results"] = plot_generator_results
@@ -66,8 +67,8 @@ class Node:
     
 # Define your desired data structure.
 class TextAndCode(BaseModel):
-    intro: str = Field(description="intro about the user query answer")
-    code: str = Field(description="code to generate one plot from the CSV file in 'data.csv' to answer the user query ")
+    intro: str = Field(description="short rephrased explanation and answer to user prompt to put as plot image header")
+    code: str = Field(description=" to generate one plot from the CSV file in 'data.csv' to answer the user query ")
     
 if __name__ == "__main__":
     c = Node()

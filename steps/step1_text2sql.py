@@ -16,7 +16,9 @@ class Node:
     def __init__(self) -> None:
         self.config = ConfigManager()
         self.db = DBManager(self.config["database"])
-        self.llm = LLM("togetherAI")
+        #self.llm = LLM("togetherAI")
+        self.llm = LLM("openAI")
+        
     def forward(self, state: State):
         question = state.get("question")
         parser = JsonOutputParser(pydantic_object=TextToSQL)
@@ -26,7 +28,7 @@ class Node:
                 input_variables=["user_prompt" ,"db_schema"],
                 partial_variables={"format_instructions": parser.get_format_instructions()},
             )
-        chain = prompt | self.llm.get_langchain_model() | parser
+        chain = prompt | self.llm | parser
         answer = chain.invoke({"user_prompt": question, "db_schema": self.db.get_schema()})
         query = answer["sql_query"]
         results = self.db.query(query)
