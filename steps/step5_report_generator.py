@@ -12,6 +12,7 @@ class Node:
     def forward(self, state: State):
         code = state["plot_generator_results"]["plot_code"]
         code = re.sub(r"plt\.show\(\)", "", code)
+        plt.switch_backend('Agg')
         exec(code)
         plot_id = len(glob("static/plot_*.png"))
         plot_filename = os.path.join("static", f"plot_{plot_id}.png")

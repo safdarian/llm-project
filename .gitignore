@@ -5,3 +5,4 @@ configs.json
 test.py
 data.csv
 static/plot*
+*.png
