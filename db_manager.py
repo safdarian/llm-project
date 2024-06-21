@@ -29,6 +29,23 @@ class DBManager:
             schema += k + " "
             schema += f'({", ".join(v)})\n'
         return schema
+    
+    def get_db_head(self):
+        tables = self.get_tables()
+        d = {t:self.get_table_columns(t) for t in tables}
+        head = ""
+        for k, v in d.items():
+            head += "Table Name: " + '"{}"'.format(k) + "\n"
+            head += f'Columns Name: ({", ".join(['"{}"'.format(item) for item in v])})\n'
+            q = f"SELECT * FROM {k} LIMIT 1"
+            current = self.query(q)
+            print(current)
+            this_line = ""
+            if len(current) > 0:
+                print(current[0].items())
+                this_line = "First Row Values: " + "(" + ", ".join([str(item0_v) for item0, item0_v in current[0].items()]) + ")"
+            head += this_line + "\n"
+        return head
 
 
 
@@ -38,7 +55,9 @@ if __name__ == "__main__":
     db = DBManager(config["database"])
 
     # print(db.query("SHOW Tables;"))
-    print(db.get_schema())
+    # print(db.get_schema())
+    print(db.get_db_head())
+    
     # print(db.get_table_columns(db.get_tables()[0]))
     # print(db.query("select * from Product"))
     # print(db.query(q))
