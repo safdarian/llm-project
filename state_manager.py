@@ -7,7 +7,11 @@ from steps.step2_data_analytics import Node as Node2
 from steps.step3_plot_generator import Node as Node3
 from steps.step4_data_storytelling import Node as Node4
 from steps.step5_report_generator import Node as Node5
+import logging
+from logging_config import setup_logging
 
+setup_logging()
+logger = logging.getLogger(__name__)
 
 class ModelStateManager:
     def __init__(self) -> None:
@@ -43,12 +47,6 @@ if __name__ == "__main__":
     question = "What is the total sales amount for each product?"
     sm = ModelStateManager()
     result = sm.execute(question=question)
-    print("Whole State")
-    print(result)
-    print("-" * 50)
-    print("Text-to-SQL Results:")
-    print(result["text2sql_results"])
-    print("-" * 50)
-    print("Plot Generator Results:")
-    print(result["plot_generator_results"])
-    
+    logger.info(f"Whole State:\n{result}"+("-" * 50))
+    logger.info(f"Text-to-SQL Results:\n"+result["text2sql_results"]+"\n"+("-" * 50))
+    logger.info(f"Plot Generator Results:\n"+result["plot_generator_results"])

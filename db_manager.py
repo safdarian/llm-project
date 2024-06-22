@@ -1,5 +1,10 @@
 import mysql.connector
 from utils import ConfigManager
+import logging
+from logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 class DBManager:
     def __init__(self, db_info) -> None:
@@ -10,6 +15,8 @@ class DBManager:
             database=db_info["database"]
         )
         self.cursor = self.connection.cursor(dictionary=True)
+        logger.info("DBManager initialized:")
+
     def query(self, query):
         self.cursor.execute(query)
         result = self.cursor.fetchall()
@@ -39,7 +46,7 @@ class DBManager:
             head += 'Columns Name: ' + "(" + ", ".join(['"{}"'.format(item) for item in v]) + ")\n"
             q = f"SELECT * FROM {k} LIMIT 1"
             current = self.query(q)
-            print(current)
+            logger.info("Current Query:" + current)
             this_line = ""
             if len(current) > 0:
                 print(current[0].items())
@@ -56,7 +63,7 @@ if __name__ == "__main__":
 
     # print(db.query("SHOW Tables;"))
     # print(db.get_schema())
-    print(db.get_db_head())
+    logger.info(f"DB head:\n{db.get_db_head()}")
     
     # print(db.get_table_columns(db.get_tables()[0]))
     # print(db.query("select * from Product"))

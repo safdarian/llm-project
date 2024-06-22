@@ -26,12 +26,16 @@ def get_form(request: Request):
 
 @app.post("/", response_class=HTMLResponse)
 def post_form(request: Request, question: str = Form(...)):
-    logger.info(f"POST request received with question: '{question}'")
-    answer_dict = state_manager.execute(question=question)
-    logger.info(f"Answer dictionary: {answer_dict}")
-    answer = answer_dict["plot_generator_results"]["answer"]
-    image_url = answer_dict["report_generation_results"]["plot_filename"]
-    return templates.TemplateResponse("index.html", {"request": request, "answer": answer, "question": question, "image": image_url})
+    logger.info(f"POST request received with question: {question}")
+    try:
+        answer_dict = state_manager.execute(question=question)
+        logger.info(f"Answer dictionary: {answer_dict}")
+        answer = answer_dict["plot_generator_results"]["answer"]
+        image_url = answer_dict["report_generation_results"]["plot_filename"]
+        return templates.TemplateResponse("index.html", {"request": request, "answer": answer, "question": question, "image": image_url})
+    except Exception as e:
+        logger.error(f"Error processing POST request: {e}")
+        raise
 
 if __name__ == "__main__":
     import uvicorn
