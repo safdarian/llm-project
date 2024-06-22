@@ -6,3 +6,4 @@ test.py
 data.csv
 static/plot*
 *.png
+logs/*
