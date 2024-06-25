@@ -24,7 +24,7 @@ class Node:
         self.llm = LLM("togetherAI")
         #self.llm = LLM("openAI")
         #self.llm = LLM("localMLX")
-        logger.info("Node1 (Text2SQL) initialized:")
+        logger.info("Node1 (Text2SQL) initialized")
 
     def forward(self, state: State):
         logger.info("Forward method called with state: %s", state)

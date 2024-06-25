@@ -47,6 +47,6 @@ if __name__ == "__main__":
     question = "What is the total sales amount for each product?"
     sm = ModelStateManager()
     result = sm.execute(question=question)
-    logger.info(f"Whole State:\n{result}"+("-" * 50))
-    logger.info(f"Text-to-SQL Results:\n"+result["text2sql_results"]+"\n"+("-" * 50))
+    logger.info(f"Whole State:\n{result}" + ("-" * 50))
+    logger.info(f"Text-to-SQL Results:\n"+result["text2sql_results"] + "\n" + ("-" * 50))
     logger.info(f"Plot Generator Results:\n"+result["plot_generator_results"])

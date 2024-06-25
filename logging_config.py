@@ -1,28 +1,53 @@
-import logging
 import os
+import logging
+import logging.config
 
 def setup_logging():
     log_dir = "logs"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    # General logging handler
-    file_handler = logging.FileHandler(os.path.join(log_dir, "app.log"), mode='a')
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s [%(levelname)s] %(message)s'))
-    
-    # Console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s [%(levelname)s] %(message)s'))
-    
-    # Adding handlers to the root logger
-    logging.basicConfig(
-        level=logging.DEBUG,
-        handlers=[
-            file_handler,
-            console_handler
-        ]
-    )
+    logging_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                "format": "%(asctime)s - %(name)s [%(levelname)s] %(message)s",
+            },
+        },
+        "handlers": {
+            "file": {
+                "class": "logging.FileHandler",
+                "filename": os.path.join(log_dir, "app.log"),
+                "formatter": "default",
+            },
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+            },
+        },
+        "root": {
+            "level": "INFO",
+            "handlers": ["file", "console"],
+        },
+        "loggers": {
+            "uvicorn": {
+                "level": "INFO",
+                "handlers": ["file", "console"],
+                "propagate": False,
+            },
+            "uvicorn.error": {
+                "level": "INFO",
+                "handlers": ["file", "console"],
+                "propagate": False,
+            },
+            "uvicorn.access": {
+                "level": "INFO",
+                "handlers": ["file", "console"],
+                "propagate": False,
+            },
+        },
+    }
+    logging.config.dictConfig(logging_config)
 
 setup_logging()

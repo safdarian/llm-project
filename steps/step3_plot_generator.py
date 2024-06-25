@@ -17,7 +17,7 @@ class Node:
         self.llm = LLM(llm_source="togetherAI", additional_config={"model": "meta-llama/Llama-3-8b-chat-hf"})
         #self.llm = LLM("openAI")
         #self.llm = LLM("localMLX")
-        logger.info("Node3 (Plot-Generator) initialized:")
+        logger.info("Node3 (Plot-Generator) initialized")
 
     def forward(self, state: State):
         logger.info("Forward method called with state: %s", state)

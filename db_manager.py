@@ -15,7 +15,7 @@ class DBManager:
             database=db_info["database"]
         )
         self.cursor = self.connection.cursor(dictionary=True)
-        logger.info("DBManager initialized:")
+        logger.info("DBManager initialized")
 
     def query(self, query):
         self.cursor.execute(query)
@@ -46,7 +46,7 @@ class DBManager:
             head += 'Columns Name: ' + "(" + ", ".join(['"{}"'.format(item) for item in v]) + ")\n"
             q = f"SELECT * FROM {k} LIMIT 1"
             current = self.query(q)
-            logger.info("Current Query:" + current)
+            logger.info(f"Current Query: {current}")
             this_line = ""
             if len(current) > 0:
                 print(current[0].items())

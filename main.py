@@ -1,3 +1,5 @@
+import uvicorn
+from uvicorn.config import LOGGING_CONFIG
 import logging
 from logging_config import setup_logging
 from fastapi import FastAPI, Request, Form
@@ -27,17 +29,12 @@ def get_form(request: Request):
 @app.post("/", response_class=HTMLResponse)
 def post_form(request: Request, question: str = Form(...)):
     logger.info(f"POST request received with question: {question}")
-    try:
-        answer_dict = state_manager.execute(question=question)
-        logger.info(f"Answer dictionary: {answer_dict}")
-        answer = answer_dict["plot_generator_results"]["answer"]
-        image_url = answer_dict["report_generation_results"]["plot_filename"]
-        return templates.TemplateResponse("index.html", {"request": request, "answer": answer, "question": question, "image": image_url})
-    except Exception as e:
-        logger.error(f"Error processing POST request: {e}")
-        raise
+    answer_dict = state_manager.execute(question=question)
+    logger.info(f"Answer dictionary: {answer_dict}")
+    answer = answer_dict["plot_generator_results"]["answer"]
+    image_url = answer_dict["report_generation_results"]["plot_filename"]
+    return templates.TemplateResponse("index.html", {"request": request, "answer": answer, "question": question, "image": image_url})
 
 if __name__ == "__main__":
-    import uvicorn
-    logger.info("Starting server...")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    logger.info("Starting server...\n" + ("=" * 60))
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_config=None)
