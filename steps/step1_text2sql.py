@@ -22,8 +22,8 @@ class Node:
         self.config = ConfigManager()
         self.db = DBManager(self.config["database"])
         self.llm = LLM("togetherAI")
-        #self.llm = LLM("openAI")
-        #self.llm = LLM("localMLX")
+        # self.llm = LLM("openAI")
+        # self.llm = LLM("cluade")
         logger.info("Node1 (Text2SQL) initialized")
 
     def forward(self, state: State):

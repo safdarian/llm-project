@@ -1,13 +1,16 @@
 from langgraph.graph import StateGraph, END
 from typing_extensions import Annotated, TypedDict
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from langchain_core.runnables import RunnableConfig
 import json
 from langchain_together import Together, ChatTogether
 from typing import Any
-from langchain_openai import ChatOpenAI
+import logging
+from logging_config import setup_logging
 
-
+setup_logging()
+logger = logging.getLogger(__name__)
 
 class State(TypedDict):
      question: str
@@ -23,7 +26,7 @@ class ConfigManager(dict):
         super().__init__()
         with open("configs.json") as f:
             self.update(json.loads(f.read()))
-    
+
 
 class LLM:
     def __init__(self, llm_source="togetherAI", additional_config={}) -> None:
@@ -33,14 +36,28 @@ class LLM:
         llm_init_map = {
             "togetherAI": self.init_togetherAI,
             "localMLX": self.init_localMLX,
-            "openAI": self.init_openAI
+            "openAI": self.init_openAI,
+            "cluade": self.init_cluade,
         }
         self.llm_init = llm_init_map[llm_source]
         self.llm_init()
-    
+        logger.info(f"LLM initialized with source: {llm_source} and model: {self.model_name}")
+
     def init_togetherAI(self):
         self.model_name = self.additional_config.get("model", "meta-llama/Llama-3-8b-chat-hf")
-        self.llm = ChatTogether(model=self.model_name, together_api_key=self.config["api"]["togetherAI"])
+        self.llm = ChatTogether(
+            model=self.model_name,
+            temperature=0,
+            together_api_key=self.config["api"]["togetherAI"]
+            )
+
+    def init_cluade(self):
+        self.model_name = self.additional_config.get("model", "claude-3-opus-20240229")
+        self.llm = ChatAnthropic(
+            model=self.model_name,
+            temperature=0,
+            api_key=self.config["api"]["cluade"],
+            )
     
     def init_localMLX(self): 
         from langchain_community.llms.mlx_pipeline import MLXPipeline
@@ -63,4 +80,6 @@ class LLM:
         )
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
-        return self.llm
+        logger.info(f"LLM Input: args={args}, kwargs={kwds}")
+        output = self.llm
+        return output

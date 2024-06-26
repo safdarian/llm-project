@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 class Node:
     def __init__(self) -> None:
-        self.llm = LLM(llm_source="togetherAI", additional_config={"model": "meta-llama/Llama-3-8b-chat-hf"})
-        #self.llm = LLM("openAI")
-        #self.llm = LLM("localMLX")
+        self.llm = LLM("togetherAI")
+        # self.llm = LLM("openAI")
+        # self.llm = LLM("cluade")
         logger.info("Node3 (Plot-Generator) initialized")
 
     def forward(self, state: State):
