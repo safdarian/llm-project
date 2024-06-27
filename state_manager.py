@@ -1,12 +1,15 @@
 from langgraph.graph import StateGraph, END
 from typing_extensions import Annotated, TypedDict
 from langchain_core.runnables import RunnableConfig
-from utils import State, ConfigManager
+from utils import AgentState, ConfigManager
 from steps.step1_text2sql import Node as Node1
 from steps.step2_data_analytics import Node as Node2
 from steps.step3_plot_generator import Node as Node3
 from steps.step4_data_storytelling import Node as Node4
 from steps.step5_report_generator import Node as Node5
+from steps.fallback_node import Node as FallbackNode
+from steps.router_node import Node as RouterNode
+
 import logging
 from logging_config import setup_logging
 
@@ -23,14 +26,24 @@ class ModelStateManager:
         self.step3 = Node3()
         self.step4 = Node4()
         self.step5 = Node5()
+        self.fallback = FallbackNode()
+        self.router = RouterNode()
         
-        self.graph = StateGraph(State)
+        self.graph = StateGraph(AgentState)
         self.graph.add_node("text2sql", self.step1)
         self.graph.add_node("analytics", self.step2)
         self.graph.add_node("plot", self.step3)
         self.graph.add_node("story", self.step4)
         self.graph.add_node("report", self.step5)
-        self.graph.set_entry_point("text2sql")
+        self.graph.add_node("fallback", self.fallback)
+        
+        self.graph.set_conditional_entry_point(
+            self.router,
+            {
+                "LLMFallback": "fallback",
+                "Text2SQL": "text2sql",
+            },
+        )
 
         self.graph.add_edge("text2sql", "analytics")
         self.graph.add_edge("analytics", "plot")

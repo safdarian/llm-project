@@ -3,6 +3,7 @@ from typing_extensions import Annotated, TypedDict
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_core.runnables import RunnableConfig
+from langchain_core.messages.base import BaseMessage
 import json
 from langchain_together import Together, ChatTogether
 from typing import Any
@@ -12,7 +13,7 @@ from logging_config import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
-class State(TypedDict):
+class AgentState(TypedDict):
      question: str
      db_data: dict
      text2sql_results: dict
