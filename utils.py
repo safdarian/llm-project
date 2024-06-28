@@ -1,11 +1,9 @@
-from langgraph.graph import StateGraph, END
-from typing_extensions import Annotated, TypedDict
+from typing_extensions import TypedDict
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
-from langchain_core.runnables import RunnableConfig
 from langchain_core.messages.base import BaseMessage
 import json
-from langchain_together import Together, ChatTogether
+from langchain_together import ChatTogether
 from typing import Any
 import logging
 from logging_config import setup_logging
@@ -14,14 +12,16 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 class AgentState(TypedDict):
-     question: str
-     db_data: dict
-     text2sql_results: dict
-     data_analytics_results: dict
-     plot_generator_results: dict
-     data_storytelling_results: dict
-     report_generation_results: dict
-     
+    question: str
+    db_data: dict
+    text2sql_results: dict
+    data_analytics_results: dict
+    plot_generator_results: dict
+    data_storytelling_results: dict
+    report_generation_results: dict
+    chat_history: list[BaseMessage]
+    answer_generation: str
+
 class ConfigManager(dict):
     def __init__(self) -> None:
         super().__init__()
@@ -45,7 +45,7 @@ class LLM:
         logger.info(f"LLM initialized with source: {llm_source} and model: {self.model_name}")
 
     def init_togetherAI(self):
-        self.model_name = self.additional_config.get("model", "meta-llama/Llama-3-8b-chat-hf")
+        self.model_name = self.additional_config.get("model", "meta-llama/Llama-3-70b-chat-hf")
         self.llm = ChatTogether(
             model=self.model_name,
             temperature=0,

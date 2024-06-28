@@ -1,6 +1,4 @@
 from langgraph.graph import StateGraph, END
-from typing_extensions import Annotated, TypedDict
-from langchain_core.runnables import RunnableConfig
 from utils import AgentState, ConfigManager
 from steps.step1_text2sql import Node as Node1
 from steps.step2_data_analytics import Node as Node2
@@ -49,6 +47,8 @@ class ModelStateManager:
         self.graph.add_edge("analytics", "plot")
         self.graph.add_edge("plot", "story")
         self.graph.add_edge("story", "report")
+        self.graph.add_edge("report", END)
+        self.graph.add_edge("fallback", END)
         self.compiled_graph = self.graph.compile()
 
     def execute(self, question):
