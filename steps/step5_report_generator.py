@@ -1,5 +1,5 @@
 from typing import Any
-from utils import State
+from utils import AgentState
 from matplotlib import pyplot as plt
 import os
 from glob import glob
@@ -9,7 +9,7 @@ class Node:
     def __init__(self) -> None:
         pass
 
-    def forward(self, state: State):
+    def forward(self, state: AgentState):
         code = state["plot_generator_results"]["plot_code"]
         code = re.sub(r"plt\.show\(\)", "", code)
         plt.switch_backend('Agg')

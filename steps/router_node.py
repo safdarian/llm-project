@@ -69,10 +69,10 @@ class Node:
         # Combine the prompt, LLM, and parser into the question router
         question_router = prompt | self.llm | question_router_parser
 
-        query = state["query"]
+        question = state["question"]
         try:
             response = question_router.invoke({
-                "query": query,
+                "question": question,
                 "output_instructions": question_router_parser.get_format_instructions()
             })
             logger.info("Question Router: " + response)

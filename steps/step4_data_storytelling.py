@@ -1,12 +1,12 @@
 from typing import Any
-from utils import State
+from utils import AgentState
 
 
 class Node:
     def __init__(self) -> None:
         pass
 
-    def forward(self, state: State):
+    def forward(self, state: AgentState):
         return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:

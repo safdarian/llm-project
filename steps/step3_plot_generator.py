@@ -1,9 +1,8 @@
 from typing import Any
-from utils import State, LLM
+from utils import AgentState, LLM
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_together import Together
 import pandas as pd
 from langchain_core.output_parsers import StrOutputParser
 import logging
@@ -19,7 +18,7 @@ class Node:
         # self.llm = LLM("cluade")
         logger.info("Node3 (Plot-Generator) initialized")
 
-    def forward(self, state: State):
+    def forward(self, state: AgentState):
         logger.info("Forward method called with state: %s", state)
         csv_file = state["text2sql_results"]["csv_path"]
         user_query = state["question"]

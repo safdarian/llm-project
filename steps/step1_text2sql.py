@@ -1,16 +1,11 @@
 from typing import Any
-from utils import State, ConfigManager, LLM
-from langchain_together import Together
-import re
-import os
+from utils import AgentState, ConfigManager, LLM
 from db_manager import DBManager
 import pandas as pd
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_together import Together
 import pandas as pd
-from langchain_core.output_parsers import StrOutputParser
 import logging
 from logging_config import setup_logging
 
@@ -26,7 +21,7 @@ class Node:
         # self.llm = LLM("cluade")
         logger.info("Node1 (Text2SQL) initialized")
 
-    def forward(self, state: State):
+    def forward(self, state: AgentState):
         logger.info("Forward method called with state: %s", state)
         question = state.get("question")
         parser = JsonOutputParser(pydantic_object=TextToSQL)
