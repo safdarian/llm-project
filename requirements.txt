@@ -4,8 +4,10 @@ langchain_community
 httpx
 langchain-together
 langchain-openai
+langchain_anthropic
 matplotlib
 fastapi
 uvicorn
 mysql-connector-python
 pandas
+chainlit
