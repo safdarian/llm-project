@@ -1,18 +1,12 @@
 from langgraph.graph import StateGraph, END
 from utils import AgentState, ConfigManager
-from steps.step1_text2sql import Node as Node1
-from steps.step2_data_analytics import Node as Node2
-from steps.step3_plot_generator import Node as Node3
-from steps.step4_data_storytelling import Node as Node4
-from steps.step5_report_generator import Node as Node5
-from steps.fallback_node import Node as FallbackNode
-from steps.router_node import Node as RouterNode
-
-import logging
-from logging_config import setup_logging
-
-setup_logging()
-logger = logging.getLogger(__name__)
+from steps.step1_text2sql import Text2SQLNode as Node1
+from steps.step2_data_analytics import DataAnalyticsNode as Node2
+from steps.step3_plot_generator import PlotGeneratorNode as Node3
+from steps.step4_data_storytelling import DataStorytellingNode as Node4
+from steps.step5_report_generator import ReportGenerationNode as Node5
+from steps.fallback_node import FallbackNode as FallbackNode
+from steps.router_node import RouterNode as RouterNode
 
 class ModelStateManager:
     def __init__(self) -> None:
@@ -60,6 +54,6 @@ if __name__ == "__main__":
     question = "What is the total sales amount for each product?"
     sm = ModelStateManager()
     result = sm.execute(question=question)
-    logger.info(f"Whole State:\n{result}" + ("-" * 50))
-    logger.info(f"Text-to-SQL Results:\n"+result["text2sql_results"] + "\n" + ("-" * 50))
-    logger.info(f"Plot Generator Results:\n"+result["plot_generator_results"])
+    # print(f"Whole State:\n{result}" + ("-" * 50))
+    # print(f"Text-to-SQL Results:\n"+result["text2sql_results"] + "\n" + ("-" * 50))
+    # print(f"Plot Generator Results:\n"+result["plot_generator_results"])

@@ -5,12 +5,6 @@ from langchain_core.messages.base import BaseMessage
 import json
 from langchain_together import ChatTogether
 from typing import Any
-import logging
-from logging_config import setup_logging
-
-setup_logging()
-logger = logging.getLogger(__name__)
-
 
 class AgentState(TypedDict):
     question: str
@@ -48,9 +42,7 @@ class LLM:
         }
         self.llm_init = llm_init_map[llm_source]
         self.llm_init()
-        logger.info(
-            f"LLM initialized with source: {llm_source} and model: {self.model_name}"
-        )
+        # print(f"LLM initialized with source: {llm_source} and model: {self.model_name}")
 
     def init_togetherAI(self):
         self.model_name = self.additional_config.get(
@@ -94,6 +86,6 @@ class LLM:
         )
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
-        logger.info(f"LLM Input: args={args}, kwargs={kwds}")
+        print(f"LLM Input: args={args}, kwargs={kwds}")
         output = self.llm
         return output

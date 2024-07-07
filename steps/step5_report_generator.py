@@ -4,12 +4,14 @@ from matplotlib import pyplot as plt
 import os
 from glob import glob
 import re
+from logging_config import LoggerManager, LogState
 
-class Node:
+class ReportGenerationNode:
     def __init__(self) -> None:
         pass
 
     def forward(self, state: AgentState):
+        LoggerManager.log_flow(f"Started", node=self.__class__.__name__, state=LogState.START)
         code = state["plot_generator_results"]["plot_code"]
         code = re.sub(r"plt\.show\(\)", "", code)
         plt.switch_backend('Agg')
@@ -21,6 +23,7 @@ class Node:
         state["report_generation_results"] = {
             "plot_filename": plot_filename
             }
+        LoggerManager.log_flow(f"Save plot in: {plot_filename}", node=self.__class__.__name__, state=LogState.FINISH)
         return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
@@ -29,5 +32,5 @@ class Node:
 
 
 if __name__ == "__main__":
-    c = Node()
+    c = ReportGenerationNode()
     print(c())

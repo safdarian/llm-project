@@ -1,8 +1,7 @@
 from typing import Any
 from utils import AgentState, LLM
 from langchain_core.pydantic_v1 import BaseModel, Field
-import logging
-from logging_config import setup_logging
+from logging_config import LoggerManager, LogState
 
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import ChatPromptTemplate
@@ -10,15 +9,12 @@ from pydantic import BaseModel, Field
 from typing import Literal
 
 
-setup_logging()
-logger = logging.getLogger(__name__)
-
-
-class Node:
+class RouterNode:
     def __init__(self) -> None:
         self.llm = LLM("togetherAI")
 
     def forward(self, state: AgentState):
+        LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
         # Define the router prompt template
         router_prompt_template = """You are a routing assistant for a database query system. Your task is to decide whether the given question is relevant to the database schema described below. If the question is relevant to the database schema, you should route the question to the "Text2SQL" tool. If the question is not relevant to the database schema, route it to "None".
 
@@ -54,23 +50,20 @@ Response:
         # Create the parser
         question_router_parser = PydanticOutputParser(pydantic_object=ChosenTool)
 
-        # Get format instructions for the parser
-        format_instructions = question_router_parser.get_format_instructions()
-
         # Combine the prompt, LLM, and parser into the question router
         question_router = prompt | self.llm | question_router_parser
 
         question = state["question"]
         try:
-            response = question_router.invoke(
+            response:ChosenTool = question_router.invoke(
                 {
                     "question": question,
                     "output_instructions": question_router_parser.get_format_instructions(),
                 }
             )
-            logger.info("Question Router: " + response)
+            LoggerManager.log_flow(f"Question Router: {response}", node=self.__class__.__name__, state=LogState.RESPONSE)
         except Exception:
-            print("Exception in getting response")
+            LoggerManager.log_flow(f"Exception in getting response.", node=self.__class__.__name__, state=LogState.ERROR)
             return "LLMFallback"
         try:
             chosen_tool = response.tool_name.lower()
@@ -90,5 +83,5 @@ Response:
 
 
 if __name__ == "__main__":
-    c = Node()
+    c = RouterNode()
     print(c())

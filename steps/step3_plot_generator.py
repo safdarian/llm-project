@@ -5,21 +5,16 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 import pandas as pd
 from langchain_core.output_parsers import StrOutputParser
-import logging
-from logging_config import setup_logging
+from logging_config import LoggerManager, LogState
 
-setup_logging()
-logger = logging.getLogger(__name__)
-
-class Node:
+class PlotGeneratorNode:
     def __init__(self) -> None:
         self.llm = LLM("togetherAI")
         # self.llm = LLM("openAI")
         # self.llm = LLM("cluade")
-        logger.info("Node3 (Plot-Generator) initialized")
 
     def forward(self, state: AgentState):
-        logger.info("Forward method called with state: %s", state)
+        LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
         csv_file = state["text2sql_results"]["csv_path"]
         user_query = state["question"]
         plot_generator_results = {}
@@ -27,7 +22,7 @@ class Node:
         num_rows = len(df)
         columns = df.columns.tolist()
         columns_text = "The CSV file Columns are: " + ", ".join(columns)
-        logger.info("CSV file loaded with %d rows and columns: %s", num_rows, columns)
+        LoggerManager.log_flow(f"CSV file loaded with {num_rows} rows and columns: {columns}", node=self.__class__.__name__)
 
         if num_rows > 1:
             parser = JsonOutputParser(pydantic_object=TextAndCode)
@@ -43,7 +38,7 @@ class Node:
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text})
             plot_generator_results["answer"] = result["intro"]
             plot_generator_results["plot_code"] = result["code"]
-            logger.info("Plot code generated:\n%s", result["code"])
+            LoggerManager.log_flow(f"Plot code generated:\n```python\n{result['code']}\n```", node=self.__class__.__name__, state=LogState.RESPONSE)
         else:
             output_parser = StrOutputParser()
             row = df.to_dict(orient='records')[0]
@@ -56,9 +51,9 @@ class Node:
             chain = prompt | self.llm | output_parser
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text, "firstRow_text": firstRow_text})
             plot_generator_results["answer"] = result[0]
-            logger.info("Answer generated for single row data:\n%s", result[0])
+            LoggerManager.log_flow(f"Answer generated for single row data:\n{result[0]}", node=self.__class__.__name__, state=LogState.RESPONSE)
         state["plot_generator_results"] = plot_generator_results
-        logger.info("State updated with plot generator results:\n%s", plot_generator_results)
+        LoggerManager.log_flow(f"State updated with plot generator results:\n{plot_generator_results}", node=self.__class__.__name__)
         return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
@@ -70,5 +65,5 @@ class TextAndCode(BaseModel):
     code: str = Field(description="Python code to generate one plot from the CSV file in 'data.csv' to answer the user query")
     
 if __name__ == "__main__":
-    c = Node()
+    c = PlotGeneratorNode()
     print(c())

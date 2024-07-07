@@ -2,7 +2,7 @@ from typing import Any
 from utils import AgentState
 
 
-class Node:
+class DataAnalyticsNode:
     def __init__(self) -> None:
         pass
 
@@ -15,5 +15,5 @@ class Node:
 
 
 if __name__ == "__main__":
-    c = Node()
+    c = DataAnalyticsNode()
     print(c())

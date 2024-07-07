@@ -1,17 +1,13 @@
 from typing import Any
 from utils import AgentState, LLM
 from langchain_core.output_parsers import StrOutputParser
-import logging
-from logging_config import setup_logging
+from logging_config import LoggerManager, LogState
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, BaseMessage
 from operator import itemgetter
 
-setup_logging()
-logger = logging.getLogger(__name__)
 
-
-class Node:
+class FallbackNode:
     def __init__(self, llm=None) -> None:
         self.llm = (
             llm
@@ -20,6 +16,8 @@ class Node:
         )
 
     def forward(self, state: AgentState):
+        LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
+
         fallback_prompt = ChatPromptTemplate.from_template(
             (
                 "You are a friendly assistant created by LLM Group in University of Tehran.\n"
@@ -50,7 +48,7 @@ class Node:
             | StrOutputParser()
         )
 
-        logger.info("### Forward method called with state: %s", state)
+        print("### Forward method called with state: %s", state)
         question = state["question"]
         chat_history = (
             state["chat_history"] if state["chat_history"] is not None else []
@@ -58,7 +56,7 @@ class Node:
         generation = fallback_chain.invoke(
             {"question": question, "chat_history": chat_history}
         )
-        logger.info("### Generation: %s", generation)
+        LoggerManager.log_flow(f"# Generation: {generation}", node=self.__class__.__name__, state=LogState.RESPONSE)
 
         # TODO: complete chat history
         return {"answer_generation": generation}
@@ -68,5 +66,5 @@ class Node:
 
 
 if __name__ == "__main__":
-    c = Node()
+    c = FallbackNode()
     print(c())
