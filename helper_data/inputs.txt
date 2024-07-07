@@ -1,0 +1,36 @@
+Base:
+Which region has the most number of sales team?
+What is the average median income for all City type of stores?
+Provide all the orders from WARE-NMK1003. Name the product and sales team for each of these order.
+List the ID, city, state and region for the store type which is fewer between borough and CDP.
+List the store located cities with regions in no water area of California state.
+How many orders placed were with more than 5 product quantities?
+How many states located in the Midwest region?
+List out the name of products which have been applied 10% discount.
+How many orders that Medsep Group had made?
+Among the orders placed by Pacific Ltd, how many orders have been applied 5% discount?
+What was the best discount applied to sales orders in 2020?
+What is the average household income of Glendale?
+What are the names of the top 3 customers who paid the highest amount of price per order after discount?
+Among the products with an order quantity of no less than 5 that was shipped in the month of May 2019, what is the name of the product with the lowest net profit?
+What is the name of the customer who purchased the product with the highest net profiit?
+
+Rewritten:
+What are the number of sales teams per region?
+What are the average household income, population, and land area for cities with stores of type "City"?
+Provide all the orders from WARE-NMK1003 along with the product details, sales team, customer details, and order financials.
+List the ID, city, state, region, population, and median income for store types "borough" and "CDP".
+List the store located cities, regions, and demographic details in no water area of California state.
+How many orders placed had product quantities greater than 5, and what were the associated products and customers?
+List all the states located in the Midwest region and their associated demographic and geographical details.
+List out the names and details of products which have been applied a 10% discount, including associated orders and customers.
+How many orders have Medsep Group made, and what are the details of these orders and associated products?
+For orders placed by Pacific Ltd, list the details of orders with a 5% discount, including product and sales team information.
+What were the best discounts applied to sales orders in 2020, and what were the associated products and customers?
+What is the average household income, population, and other demographic details of Glendale?
+What are the names and details of the top 10 customers who paid the highest total amount per order after discount?
+Among the products with an order quantity of 5 or more that were shipped in May 2019, what are the names and details of products with the lowest net profit?
+What are the names of customers who purchased products with the highest net profit, along with the details of these purchases and products?
+
+Prompt:
+Rewrite these queries to make them broader rather than specific. The goal is to generate SQL queries that will retrieve comprehensive data for plotting. When a query is too specific, it returns only a single answer or a short list of answers, leaving little to plot. Broader questions should retrieve more columns and rows of data for richer analysis and visualization.
