@@ -44,7 +44,6 @@ class DBManager:
             LoggerManager.log_flow(f"Generated Query: {current}", node=self.__class__.__name__)
             this_line = ""
             if len(current) > 0:
-                print(current[0].items())
                 this_line = "First Row Values: " + "(" + ", ".join([str(item0_v) for item0, item0_v in current[0].items()]) + ")"
             head += this_line + "\n"
         return head
@@ -60,5 +59,5 @@ if __name__ == "__main__":
     # print(db.get_schema())
     
     # print(db.get_table_columns(db.get_tables()[0]))
-    # print(db.query("select * from Product"))
+    # print(db.query("select * from Products"))
     # print(db.query(q))

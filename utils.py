@@ -78,13 +78,13 @@ class LLM:
         self.llm = ChatOpenAI(
             model=self.model_name,
             temperature=self.temperature,
-            max_tokens=300,
+            max_tokens=None,
             timeout=None,
             max_retries=2,
             api_key=self.config["api"]["openAI"],
         )
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
-        print(f"LLM Input: args={args}, kwargs={kwds}")
+        # print(f"LLM Input: args={args}, kwargs={kwds}")
         output = self.llm
         return output
