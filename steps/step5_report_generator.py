@@ -11,6 +11,8 @@ class ReportGenerationNode:
         pass
 
     def forward(self, state: AgentState):
+        LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
+        LoggerManager.log_flow_metric(node=self.__class__.__name__, state=LogState.RESPONSE)
         return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
