@@ -17,7 +17,3 @@ class Step0_DummyNode:
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         return self.forward(*args, **kwds)
-    
-if __name__ == "__main__":
-    c = Text2SQLNode()
-    print(c())
