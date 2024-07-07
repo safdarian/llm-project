@@ -9,3 +9,6 @@ static/plot*
 logs/*
 .chainlit
 temp.txt
+Presentation.pdf
+Presentation.pptx
+~$Presentation.pptx
