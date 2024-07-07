@@ -23,7 +23,7 @@ def setup_logger(name, log_file, level=logging.INFO, format=None):
 flow_metric_logger = setup_logger(
     "flow_metric_logger",
     os.path.join(log_directory, "flow_metric.log"),
-    format="%(message)s",
+    format="%(asctime)s - %(message)s",
 )
 flow_logger = setup_logger(
     "flow_logger", os.path.join(log_directory, "flow_log.log"), format="%(message)s"
