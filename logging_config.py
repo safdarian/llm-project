@@ -2,10 +2,15 @@ import os
 import logging
 import logging.config
 from enum import Enum
+from utils import AgentState
 
 log_directory = "logs"
+eval_log_directory = f"{log_directory}/eval_logs"
+
 if not os.path.exists(log_directory):
-    os.makedirs(log_directory)
+    os.makedirs(log_directory, exist_ok=True)
+if not os.path.exists(eval_log_directory):
+    os.makedirs(eval_log_directory, exist_ok=True)
 
 
 def setup_logger(name, log_file, level=logging.INFO, format=None):
@@ -29,7 +34,7 @@ flow_logger = setup_logger(
     "flow_logger", os.path.join(log_directory, "flow_log.log"), format="%(message)s"
 )
 final_io_logger = setup_logger(
-    "final_io_logger", os.path.join(log_directory, "final_io.log"), format="%(message)s"
+    "final_io_logger", os.path.join(eval_log_directory, "final_io.log"), format="%(message)s"
 )
 
 
@@ -62,20 +67,29 @@ class LoggerManager:
         flow_logger.info(log_message)
 
     @staticmethod
-    def save_final_io(initial_input, final_output):
-        input_dir = os.path.join(log_directory, "inputs")
-        output_dir = os.path.join(log_directory, "outputs")
-        os.makedirs(input_dir, exist_ok=True)
-        os.makedirs(output_dir, exist_ok=True)
+    def save_final_io(report:AgentState):
+        files_number = len(os.listdir(eval_log_directory))
+        final_log_directory = os.path.join(eval_log_directory, f'report_{files_number}')
+        os.makedirs(final_log_directory, exist_ok=True)
 
-        input_file = os.path.join(input_dir, "initial_input.txt")
-        output_file = os.path.join(output_dir, "final_output.txt")
+        def copy_file(src, dst):
+            if os.name == 'nt':  # Windows
+                cmd = f'copy "{src}" "{dst}"'
+            else:  # Unix/Linux
+                cmd = f'cp "{src}" "{dst}"'
+            os.system(cmd)
+        
+        try:
+            # Copy Image
+            copy_file(report["report_generation_results"]["plot_filename"], os.path.join(final_log_directory,'plot.png'))
+            final_output = report["plot_generator_results"]["aswer"] #TODO: change it
+        except:
+            final_output = report["answer_generation"]
 
-        with open(input_file, "w") as f:
-            f.write(initial_input)
+        report_file = os.path.join(final_log_directory, "final_output.txt")
+        log_message = f"human: {report['question']}\n\nAI: {final_output}"
 
-        with open(output_file, "w") as f:
-            f.write(final_output)
+        with open(report_file, "w") as f:
+            f.write(log_message)
 
-        log_message = f"Initial input and final output saved.\nInitial input: {initial_input}\nFinal output: {final_output}"
         final_io_logger.info(log_message)

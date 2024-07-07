@@ -2,6 +2,7 @@ from logging_config import LoggerManager, LogState
 from pydantic import BaseModel
 from state_manager import ModelStateManager
 import chainlit as cl
+from utils import AgentState
 
 state_manager = ModelStateManager()
 
@@ -22,7 +23,7 @@ async def on_chat_start():
 async def on_message(message: cl.Message):
     LoggerManager.log_flow_metric(node='Question', content=f'"{message.content}"', state=LogState.RESULT)
     LoggerManager.log_flow(f"### Prompt: \"{message.content}\"")
-    answer_dict = state_manager.execute(question=message.content)
+    answer_dict:AgentState = state_manager.execute(question=message.content)
     print("### Answer:", answer_dict)
     LoggerManager.log_flow_metric(node='Answer', content=answer_dict, state=LogState.RESULT)
     content = answer_dict["answer_generation"]
@@ -46,3 +47,4 @@ async def on_message(message: cl.Message):
     #     await msg.stream_token(chunk)
 
     await msg.send()
+    LoggerManager.save_final_io(answer_dict)
