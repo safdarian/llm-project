@@ -53,7 +53,7 @@ class PlotGeneratorNode:
             row = df.to_dict(orient='records')[0]
             firstRow_text = "Row data: " + ", ".join([f"{col}: {row[col]}" for col in columns]) + "\n"
             prompt = PromptTemplate(
-                template="Answer the user query.\n{format_instructions}\n{user_prompt}\n{columns_text}\n{firstRow_text}",
+                template="Answer the user query based on the retrived information.\n{format_instructions}\n{user_prompt}\n{columns_text}\n{firstRow_text}",
                 input_variables=["user_prompt", "columns_text", "firstRow_text"],
                 partial_variables={"format_instructions": output_parser.get_format_instructions()},
             )

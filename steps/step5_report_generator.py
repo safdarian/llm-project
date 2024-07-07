@@ -5,10 +5,11 @@ import os
 from glob import glob
 import re
 from logging_config import LoggerManager, LogState
+from utils import AgentState, LLM
 
 class ReportGenerationNode:
     def __init__(self) -> None:
-        pass
+        self.llm = LLM("openAI")
 
     def forward(self, state: AgentState):
         LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
