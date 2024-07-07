@@ -20,11 +20,11 @@ async def on_chat_start():
 
 @cl.on_message
 async def on_message(message: cl.Message):
-    LoggerManager.log_flow_metric(node='Question', content=message.content)
+    LoggerManager.log_flow_metric(node='Question', content=f'"{message.content}"', state=LogState.RESULT)
     LoggerManager.log_flow(f"### Prompt: \"{message.content}\"")
     answer_dict = state_manager.execute(question=message.content)
     print("### Answer:", answer_dict)
-    LoggerManager.log_flow_metric(node='Answer', state=answer_dict)
+    LoggerManager.log_flow_metric(node='Answer', content=answer_dict, state=LogState.RESULT)
     content = answer_dict["answer_generation"]
     elements = None
     if content == None:

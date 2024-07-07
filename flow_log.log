@@ -11,7 +11,7 @@ Chatbot started...
 [Text2SQLNode] Start with meta-llama/Llama-3-70b-chat-hf
 [DBManager] Generated Query: [{'Product': 'Product_A', 'Sales_Amount': 922, 'Units_Sold': 16, 'Region': 'North', 'Discount': 15}]
 [DBManager] Generated Query: []
-[Text2SQLNode] SQL query generated: SELECT Product, SUM(Sales_Amount) AS Total_Sales_Amount FROM Product GROUP BY Product
+[Text2SQLNode] SQL query generated: "SELECT Product, SUM(Sales_Amount) AS Total_Sales_Amount FROM Product GROUP BY Product"
 [PlotGeneratorNode] Start with meta-llama/Llama-3-70b-chat-hf
 [PlotGeneratorNode] CSV file loaded with 7 rows and columns: ['Product', 'Total_Sales_Amount']
 [PlotGeneratorNode] Plot code generated:

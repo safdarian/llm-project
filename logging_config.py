@@ -34,6 +34,7 @@ final_io_logger = setup_logger(
 
 
 class LogState(Enum):
+    RESULT = "RESULT"
     START = "START"
     RESPONSE = "RESPONSE"
     FINISH = "FINISH"
@@ -43,16 +44,14 @@ class LogState(Enum):
 
 class LoggerManager:
     @staticmethod
-    def log_flow_metric(node, state=None, content=None):
-        log_message = f"[{node}] {state if state is not None else ''}"
+    def log_flow_metric(node, state: LogState, content=None):
+        log_message = f"[{node}] {state}"
         if content != None:
-            if state != None:
-                log_message += " - "
-            log_message += f'"{content}"'
+            log_message += f" - {content}"
         flow_metric_logger.info(log_message)
 
     @staticmethod
-    def log_flow(message: str, node: str = None, state=None):
+    def log_flow(message: str, node: str = None, state: LogState = None):
         log_message = message
         if node is not None:
             log_message = f"[{node}] " + log_message

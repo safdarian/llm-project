@@ -29,7 +29,7 @@ class Text2SQLNode:
         chain = prompt | self.llm | parser
         answer = chain.invoke({"user_prompt": question, "db_schema": self.db.get_db_head()})
         query = answer["sql_query"]
-        LoggerManager.log_flow(f"SQL query generated: {query}", node=self.__class__.__name__, state=LogState.RESPONSE)
+        LoggerManager.log_flow(f"SQL query generated: \"{query}\"", node=self.__class__.__name__, state=LogState.RESPONSE)
         results = self.db.query(query)
         df = pd.DataFrame(results)
         df.to_csv('data.csv', index=False)
