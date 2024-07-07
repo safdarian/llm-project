@@ -8,3 +8,4 @@ static/plot*
 *.png
 logs/*
 .chainlit
+temp.txt
