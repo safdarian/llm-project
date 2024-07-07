@@ -29,9 +29,9 @@ async def on_message(message: cl.Message):
     content = answer_dict["answer_generation"]
     elements = None
     if content == None:
-        content = answer_dict["plot_generator_results"]["answer"]
+        content = answer_dict["data_storytelling_results"]
         code = answer_dict["plot_generator_results"]["plot_code"]
-        image_path = answer_dict["report_generation_results"]["plot_filename"]
+        image_path = answer_dict["plot_generator_results"]["plot_filename"]
         elements = [
             cl.Image(path=image_path, name="image1", display="inline"),
             # cl.Text(code),

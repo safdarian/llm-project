@@ -62,10 +62,9 @@ class PlotGeneratorNode:
             plot_generator_results["answer"] = result[0]
             LoggerManager.log_flow(f"Answer generated for single row data:\n{result[0]}", node=self.__class__.__name__, state=LogState.RESPONSE)
             
-        state["plot_generator_results"] = plot_generator_results
         LoggerManager.log_flow(f"State updated with plot generator results:\n{plot_generator_results}", node=self.__class__.__name__)
 
-        LoggerManager.log_flow(f"Started", node='PlotGeneratorNode.PlotCode', state=LogState.START)
+        LoggerManager.log_flow(f"Started", node='PlotCode', state=LogState.START)
         code = plot_generator_results["plot_code"]
         code = re.sub(r"plt\.show\(\)", "", code)
         plt.switch_backend('Agg')
@@ -74,10 +73,10 @@ class PlotGeneratorNode:
         plot_filename = os.path.join("static", f"plot_{plot_id}.png")
         plt.savefig(plot_filename)
         plt.close()
-        state["report_generation_results"] = {
-            "plot_filename": plot_filename
-            }
-        LoggerManager.log_flow(f"Save plot in: {plot_filename}", node='PlotGeneratorNode.PlotCode', state=LogState.FINISH)
+        plot_generator_results["plot_filename"] = plot_filename
+        state["plot_generator_results"] = plot_generator_results
+
+        LoggerManager.log_flow(f"Save plot in: {plot_filename}", node='PlotCode', state=LogState.FINISH)
         return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:
