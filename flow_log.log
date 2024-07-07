@@ -1,0 +1,31 @@
+Chatbot started...
+========================================
+### Prompt: "Hello"
+[RouterNode] Start with meta-llama/Llama-3-70b-chat-hf
+[RouterNode] Question Router: tool_name='None'
+[FallbackNode] Start with meta-llama/Llama-3-70b-chat-hf
+[FallbackNode] # Generation: "Hello! I'm happy to assist you with any sales data or business-related queries. What would you like to know or discuss?"
+### Prompt: "What is the total sales amount for each product?"
+[RouterNode] Start with meta-llama/Llama-3-70b-chat-hf
+[RouterNode] Question Router: tool_name='Text2SQL'
+[Text2SQLNode] Start with meta-llama/Llama-3-70b-chat-hf
+[DBManager] Generated Query: [{'Product': 'Product_A', 'Sales_Amount': 922, 'Units_Sold': 16, 'Region': 'North', 'Discount': 15}]
+[DBManager] Generated Query: []
+[Text2SQLNode] SQL query generated: SELECT Product, SUM(Sales_Amount) AS Total_Sales_Amount FROM Product GROUP BY Product
+[PlotGeneratorNode] Start with meta-llama/Llama-3-70b-chat-hf
+[PlotGeneratorNode] CSV file loaded with 7 rows and columns: ['Product', 'Total_Sales_Amount']
+[PlotGeneratorNode] Plot code generated:
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+data = pd.read_csv('data.csv')
+data.groupby('Product')['Total_Sales_Amount'].sum().plot(kind='bar')
+plt.title('Total Sales Amount by Product')
+plt.xlabel('Product')
+plt.ylabel('Total Sales Amount')
+plt.show()
+```
+[PlotGeneratorNode] State updated with plot generator results:
+{'answer': 'This plot shows the total sales amount for each product.', 'plot_code': "import pandas as pd\nimport matplotlib.pyplot as plt\ndata = pd.read_csv('data.csv')\ndata.groupby('Product')['Total_Sales_Amount'].sum().plot(kind='bar')\nplt.title('Total Sales Amount by Product')\nplt.xlabel('Product')\nplt.ylabel('Total Sales Amount')\nplt.show()"}
+[ReportGenerationNode] Started
+[ReportGenerationNode] Save plot in: static\plot_15.png

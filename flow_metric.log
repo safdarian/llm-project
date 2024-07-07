@@ -1,0 +1,16 @@
+[Question] "Hello"
+[RouterNode] LogState.START
+[RouterNode] LogState.RESPONSE
+[FallbackNode] LogState.START
+[FallbackNode] LogState.RESPONSE
+[Answer] {'question': 'Hello', 'db_data': None, 'text2sql_results':None, 'data_analytics_results': None, 'plot_generator_results': None, 'chat_history': None, 'answer_generation': "Hello! I'm happy to assist you with any sales data or business-related queries. What would you like to know or discuss?"}
+[Question] "What is the total sales amount for each product?"
+[RouterNode] LogState.START
+[RouterNode] LogState.RESPONSE
+[Text2SQLNode] LogState.START
+[Text2SQLNode] LogState.RESPONSE
+[PlotGeneratorNode] LogState.START
+[PlotGeneratorNode] LogState.RESPONSE
+[ReportGenerationNode] LogState.START
+[ReportGenerationNode] LogState.FINISH
+[Answer] {'question': 'What is the total sales amount for each product?', 'db_data': None, 'text2sql_results': {'query': 'SELECT Product, SUM(Sales_Amount) AS Total_Sales_Amount FROM Product GROUP BY Product', 'csv_path': 'data.csv'}, 'data_analytics_results': None, 'plot_generator_results': {'answer': 'This plot shows the total sales amount for each product.', 'plot_code': "import pandas as pd\nimport matplotlib.pyplot as plt\ndata = pd.read_csv('data.csv')\ndata.groupby('Product')['Total_Sales_Amount'].sum().plot(kind='bar')\nplt.title('Total Sales Amount by Product')\nplt.xlabel('Product')\nplt.ylabel('Total Sales Amount')\nplt.show()"}, 'data_storytelling_results': None, 'report_generation_results': {'plot_filename': 'static\\plot_15.png'}, 'chat_history': None, 'answer_generation': None}
