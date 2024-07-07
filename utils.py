@@ -13,7 +13,6 @@ class AgentState(TypedDict):
     data_analytics_results: dict
     plot_generator_results: dict
     data_storytelling_results: dict
-    report_generation_results: dict
     chat_history: list[BaseMessage]
     answer_generation: str
 

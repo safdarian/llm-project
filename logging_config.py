@@ -81,7 +81,7 @@ class LoggerManager:
         
         try:
             # Copy Image
-            copy_file(report["report_generation_results"]["plot_filename"], os.path.join(final_log_directory,'plot.png'))
+            copy_file(report["plot_generator_results"]["plot_filename"], os.path.join(final_log_directory,'plot.png'))
             final_output = report["data_storytelling_results"] #TODO
         except:
             final_output = report["answer_generation"]
