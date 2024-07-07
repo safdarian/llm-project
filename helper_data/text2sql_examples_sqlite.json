@@ -1,0 +1,985 @@
+[
+    {
+    "db_id": "regional_sales",
+    "question": "Which region has the most number of sales team?",
+    "evidence": "the most number of sales team refers to MAX(COUNT(Sales Team));",
+    "SQL": "SELECT Region FROM `Sales Team` GROUP BY Region ORDER BY COUNT(DISTINCT `Sales Team`) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List all the customers with name containing the word 'Group'.",
+    "evidence": "name containing the word 'Group' refers to Customer Names LIKE '%Group%';",
+    "SQL": "SELECT T FROM ( SELECT IIF(`Customer Names` LIKE '%Group%', `Customer Names`, NULL) AS T FROM Customers ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the average median income for all City type of stores?",
+    "evidence": "AVG(Median Income) where Type = 'City';",
+    "SQL": "SELECT AVG(`Median Income`) FROM `Store Locations` WHERE Type = 'City'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Name the sales team and the region of order number 'SO - 000137'.",
+    "evidence": "",
+    "SQL": "SELECT T2.`Sales Team`, T2.Region FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T1.OrderNumber = 'SO - 000137'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List all the order numbers along with its product name for each order under the sales team of 'Douglas Tucker'.",
+    "evidence": "",
+    "SQL": "SELECT DISTINCT T1.ProductID, T1.`Product Name` FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID INNER JOIN `Sales Team` AS T3 ON T3.SalesTeamID = T2._SalesTeamID WHERE T3.`Sales Team` = 'Douglas Tucker'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among orders in 2020, name the customers who had the greatest discount applied for 'Cocktail Glasses'",
+    "evidence": "MAX(Discount Applied) where Product Name = 'Cocktail Glasses'; orders in 2020 refer to the OrderDate between 01-01-2020 and 31-12-2020;",
+    "SQL": "SELECT DISTINCT T1.`Customer Names` FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products AS T3 ON T3.ProductID = T2._ProductID WHERE T3.`Product Name` = 'Cocktail Glasses' AND SUBSTR(T2.OrderDate, -2) = '20' AND T2.`Discount Applied` = ( SELECT T2.`Discount Applied` FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products AS T3 ON T3.ProductID = T2._ProductID WHERE T3.`Product Name` = 'Cocktail Glasses' AND T2.OrderDate LIKE '%/%/20' ORDER BY T2.`Discount Applied` DESC LIMIT 1 )"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List all the order numbers for In-Store sales and find the city where the store is located.",
+    "evidence": "In-Store sales refer to Sales Channel = 'In-Store'; city refers to City Name;",
+    "SQL": "SELECT DISTINCT T1.OrderNumber, T2.`City Name` FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T1.`Sales Channel` = 'In-Store'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Name the most expensive ordered? Who, when was it ordered?",
+    "evidence": "the most expensive refers to MAX(Unit Cost); who refers to Customer Names; when refers to OrderDate;",
+    "SQL": "SELECT T2.OrderNumber, T1.`Customer Names`, T2.OrderDate FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products AS T3 ON T3.ProductID = T2._ProductID ORDER BY T2.`Unit Cost` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List all the numbers ordered by 'Rochester Ltd' in 2018.",
+    "evidence": "Rochester Ltd is the name of the customer; all the numbers ordered refer to OrderNumber; 2018 refers to SUBSTR(OrderDate, -2) = '18';",
+    "SQL": "SELECT DISTINCT T FROM ( SELECT CASE  WHEN T1.OrderDate LIKE '%/%/18' AND T2.`Customer Names` = 'Rochester Ltd' THEN T1.OrderNumber ELSE NULL END AS T FROM `Sales Orders` T1 INNER JOIN Customers T2 ON T2.CustomerID = T1._CustomerID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Provide all the orders from WARE-NMK1003. Name the product and sales team for each of these order.",
+    "evidence": "all the orders from WARE-NMK1003 refer to OrderNumber where WarehouseCode = 'WARE-NMK1003'; product refers to Product Name;",
+    "SQL": "SELECT DISTINCT T1.`Product Name`, T3.`Sales Team` FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID INNER JOIN `Sales Team` AS T3 ON T3.SalesTeamID = T2._SalesTeamID WHERE T2.WarehouseCode = 'WARE-NMK1003'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List the name of all customers who had made orders online.",
+    "evidence": "orders online refer to Sales Channel = 'Online';",
+    "SQL": "SELECT T FROM ( SELECT CASE  WHEN T2.`Sales Channel` = 'Online' THEN T1.`Customer Names` ELSE NULL END AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate the average net profit for bakeware product.",
+    "evidence": "net profit can be computed as SUBTRACT(Unit Price, Unit Cost); AVG(net profit) where Product Name = 'Bakeware';",
+    "SQL": "SELECT AVG(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', ''))  FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T2.`Product Name` = 'Bakeware'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Name the sales team name who had orders with the greatest net profit in 2020.",
+    "evidence": "net profit can be computed as SUBTRACT(Unit Price, Unit Cost); the greatest net profit in 2020 refers to MAX(net profit) where OrderDate LIKE '%/20';",
+    "SQL": "SELECT T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T1.OrderDate LIKE '%/%/20' GROUP BY T2.`Sales Team` ORDER BY SUM(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Sate the order number and calculate the net profit for each order under Joshua Bennett.",
+    "evidence": "net profit can be computed as SUBTRACT(Unit Price, Unit Cost); Joshua Bennett is the name of Sales Team;",
+    "SQL": "SELECT T1.OrderNumber , REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')  FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T2.`Sales Team` = 'Joshua Bennett'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among the sales order shipped in July 2018, calculate the percentage of orders for home fragrances.",
+    "evidence": "shipped in July 2018 refers to ShipDate between 01-07-2018 and 31-07-2018; DIVIDE(COUNT(OrderNumber where Product Name = 'Home Fragrances' and SUBSTR(OrderDate, 1, 1) = '7'), COUNT(OrderNumber where SUBSTR(ShipDate, -2) = '18')) as percentage;",
+    "SQL": "SELECT SUM(CASE WHEN T2.`Product Name` = 'Home Fragrances' THEN 1 ELSE 0 END) * 100 / COUNT(T1.OrderNumber)  FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T1.ShipDate LIKE '7/%/18'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List down the customer IDs and names that start with alphabet \"W\".",
+    "evidence": "names that start with alphabet \"W\" refer to Customer Names LIKE 'W%';",
+    "SQL": "SELECT DISTINCT CustomerID, `Customer Names` FROM Customers WHERE `Customer Names` LIKE 'W%' ORDER BY `Customer Names` DESC"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List down the product IDs and names that include the word \"Outdoor\".",
+    "evidence": "names that include the word \"Outdoor\" refer to Product Name LIKE '%Outdoor%';",
+    "SQL": "SELECT ProductID, T FROM ( SELECT ProductID , CASE  WHEN `Product Name` LIKE '%Outdoor%' THEN `Product Name` ELSE NULL END AS T FROM Products ) WHERE T IS NOT NULL ORDER BY T DESC"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among the sales with 40% discount via in-store channel, how many products were shipped from warehouse code of WARE-NMK1003?",
+    "evidence": "40% discount refers to Discount Applied = 0.4; in-store channel refers to Sales Channel = 'In-Store'; orders refer to OrderNumber;",
+    "SQL": "SELECT COUNT(DISTINCT T) FROM ( SELECT CASE  WHEN `Sales Channel` = 'In-Store' AND WarehouseCode = 'WARE-NMK1003' AND `Discount Applied` = '0.4' THEN OrderNumber ELSE NULL END AS T FROM `Sales Orders` ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Mention the most populated city and median income of the store in Florida state.",
+    "evidence": "most populated refers to Max(Population);",
+    "SQL": "SELECT `City Name`, `Median Income` FROM `Store Locations` WHERE State = 'Florida' ORDER BY Population DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Describe the ID, city and region of the stores which are in Allen country.",
+    "evidence": "ID refers to StoreID;",
+    "SQL": "SELECT DISTINCT T2.StoreID, T2.`City Name`, T1.Region FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode WHERE T2.County = 'Allen County'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List the ID, city, state and region for the store type which is fewer between borough and CDP.",
+    "evidence": "COUNT(StoreID) < COUNT(StoreID where Type = 'Borough') < COUNT(StoreID where Type = 'CDP');",
+    "SQL": "SELECT DISTINCT T2.StoreID, T2.`City Name`, T1.State, T2.Type FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode WHERE T2.Type = 'Borough' OR T2.Type = 'CDP'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Write down the region and name of the sale team ID of 18 and compare their orders between in-store and online.",
+    "evidence": "sale team ID of 18 refers to _SalesTeamID = 18; COUNT(OrderNumber where Sales Channel = 'In-Store') > COUNT(OrderNumber where Sales Channel = 'Online');",
+    "SQL": "SELECT T2.Region, T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T2.SalesTeamID = 18 AND T1.`Sales Channel` = 'In-Store' OR T1.`Sales Channel` = 'Online'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate the percentage of order via in-store channel of customer \"Medline\".",
+    "evidence": "Medline is the name of the customer; DIVIDE(COUNT(OrderNumber where Sales Channel = 'In-Store' and Customer Names = 'Medline'), COUNT(OrderNumber where Customer Names = 'Medline')) as percentage;",
+    "SQL": "SELECT CAST(SUM(CASE WHEN T1.`Sales Channel` = 'In-Store' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1._CustomerID) FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID WHERE T2.`Customer Names` = 'Medline '"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Describe the customer names and lasting delivery periods for the product of \"Bedroom Furniture\" by wholesale channel in 2019.",
+    "evidence": "delivery period in 2019 means time between placing of an order and the receipt of product and refers to SUBTRACT(DeliveryDate, OrderDate) where SUBSTR(OrderDate, -2 ) = '19'; Sales Channel = 'Wholesale'; Product Name = 'Bedroom Furniture';",
+    "SQL": "SELECT T1.`Customer Names`, T2.DeliveryDate FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products AS T3 ON T3.ProductID = T2._ProductID WHERE T2.`Sales Channel` = 'Wholesale' AND T3.`Product Name` = 'Bedroom Furniture' AND T2.OrderDate LIKE '%/%/19'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Describe the customer names and product names which had over 3800 USD in net profit.",
+    "evidence": "over 3800 USD in net profit refers to SUBTRACT(Unit Price, Unit Cost) where Net Profit > 3800;",
+    "SQL": "SELECT DISTINCT `Customer Names`, `Product Name` FROM ( SELECT T1.`Customer Names`, T3.`Product Name` , REPLACE(T2.`Unit Price`, ',', '') - REPLACE(T2.`Unit Cost`, ',', '') AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products T3 ON T3.ProductID = T2._ProductID ) WHERE T > 3800"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List the store located cities with regions in no water area of California state.",
+    "evidence": "cities refer to City Name; no water area refers to Water Area = 0;",
+    "SQL": "SELECT DISTINCT T2.`City Name` FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode WHERE T2.State = 'California' AND T2.`Water Area` = '0'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate the order percentage by \"Carlos Miller\" sales team.",
+    "evidence": "DIVIDE(COUNT(OrderNumber where Sales Team = 'Carlos Miller'), COUNT(OrderNumber)) as percentage;",
+    "SQL": "SELECT CAST(SUM(CASE WHEN T2.`Sales Team` = 'Carlos Miller' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Compare the number of orders between \"Platters\" and \"Serveware\" products.",
+    "evidence": "COUNT(OrderNumber where Product Name = 'Platters') > COUNT(OrderNumber where Product Name = 'Serveware');",
+    "SQL": "SELECT SUM(CASE WHEN T2.`Product Name` = 'Platters' THEN 1 ELSE 0 END) AS num1 , SUM(CASE WHEN T2.`Product Name` = 'Serveware' THEN 1 ELSE 0 END) AS num2 FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate the total net profit of the store located in highest median income city.",
+    "evidence": "net profit can be computed as SUBTRACT(Unit Price, Unit Cost); highest median income city refers to City Name where MAX(Median Income);",
+    "SQL": "SELECT SUM(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID ORDER BY T2.`Median Income` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among the sales team in South region, write down the numbers of orders made by the sales team ID of one digit.",
+    "evidence": "sales team ID of one digit refers to _SalesTeamID BETWEEN 1 AND 9; numbers of orders refer to COUNT(OrderNumber);",
+    "SQL": "SELECT COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T2.Region = 'South' AND T2.SalesTeamID BETWEEN 1 AND 9 GROUP BY T2.SalesTeamID HAVING COUNT(T1.OrderNumber)"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many orders have order date in 5/31/2018?",
+    "evidence": "orders refer to OrderNumber;",
+    "SQL": "SELECT SUM(IIF(OrderDate = '5/31/18', 1, 0)) FROM `Sales Orders`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List out the name of orders which have delivery date of 6/13/2018.",
+    "evidence": "",
+    "SQL": "SELECT DISTINCT T FROM ( SELECT IIF(DeliveryDate = '6/13/18', OrderNumber, NULL) AS T FROM `Sales Orders` ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many orders placed were with more than 5 product quantities?",
+    "evidence": "orders refer to OrderNumber; more than 5 product quantities refer to Order Quantity > 5;",
+    "SQL": "SELECT SUM(IIF(`Order Quantity` > 5, 1, 0)) FROM `Sales Orders`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "State the full name of state code \"GA\".",
+    "evidence": "",
+    "SQL": "SELECT T FROM ( SELECT IIF(StateCode = 'GA', State, NULL) AS T FROM Regions ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many states located in the Midwest region?",
+    "evidence": "",
+    "SQL": "SELECT COUNT(DISTINCT T) FROM ( SELECT CASE  WHEN Region = 'Midwest' THEN StateCode ELSE NULL END AS T FROM Regions ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List out the product name of order which has unit cost of 781.22.",
+    "evidence": "",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT IIF(T1.`Unit Cost` = 781.22, T2.`Product Name`, NULL) AS T FROM `Sales Orders` T1 INNER JOIN Products T2 ON T2.ProductID = T1._ProductID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "State the delivery date of cookware.",
+    "evidence": "Cookware is the name of the product;",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT IIF(T2.`Product Name` = 'Cookware', T1.DeliveryDate, NULL) AS T FROM `Sales Orders` T1 INNER JOIN Products T2 ON T2.ProductID = T1._ProductID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many furniture cushions orders which have date of order in 2018?",
+    "evidence": "furniture cushions orders refer to OrderNumber where Product Name = 'Furniture Cushions'; date of order in 2018 refers to SUBSTR(OrderDate, -2) = '18'",
+    "SQL": "SELECT SUM(CASE WHEN T1.OrderDate LIKE '%/%/18' AND T2.`Product Name` = 'Furniture Cushions' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List out the name of products which have been applied 10% discount.",
+    "evidence": "applied 10% discount refers to Discount Applied = 0.1;",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT IIF(T1.`Discount Applied` = 0.1, T2.`Product Name`, NULL) AS T FROM `Sales Orders` T1 INNER JOIN Products T2 ON T2.ProductID = T1._ProductID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate the average net profit of phones which have sales channel of distributor.",
+    "evidence": "net profit can be computed as SUBTRACT(Unit Price, Unit Cost); AVG(net profit) where Product Name = 'Phones' and Sales Channel = 'Distributor';",
+    "SQL": "SELECT SUM(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')) / COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T2.`Product Name` = 'Phones' AND T1.`Sales Channel` = 'Distributor'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate the average net profit of bar tools which has ordered quantity exceed 5.",
+    "evidence": "net profit can be computed as SUBTRACT(Unit Price, Unit Cost); AVG(net profit) where Product Name = 'Bar Tools' and Order Quantity > 5;",
+    "SQL": "SELECT SUM(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')) / COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T2.`Product Name` = 'Bar Tools' AND T1.`Order Quantity` > 5"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List out the city name of states located in South region.",
+    "evidence": "",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T1.Region = 'South' THEN T2.`City Name` END AS T FROM Regions T1 INNER JOIN `Store Locations` T2 ON T2.StateCode = T1.StateCode ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the region of stores which have type of \"Town\" in the list?",
+    "evidence": "",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.Type = 'Town' THEN T1.Region END AS T FROM Regions T1 INNER JOIN `Store Locations` T2 ON T2.StateCode = T1.StateCode ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many orders that Medsep Group had made?",
+    "evidence": "Medsep Group is the name of the customer; orders refer to OrderNumber;",
+    "SQL": "SELECT SUM(CASE WHEN T1.`Customer Names` = 'Medsep Group' THEN 1 ELSE 0 END) FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List out the discount levels applied for all orders from Ole Group.",
+    "evidence": "Ole Group is the name of the customer; discount levels applied refer to Discount Applied NOT NULL;",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T1.`Customer Names` = 'Ole Group' THEN T2.`Discount Applied` END AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "State the customer name of orders which has shipped date in 7/8/2018.",
+    "evidence": "shipped date in 7/8/2018 refers to ShipDate = '7/8/18'",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.ShipDate = '7/8/18' THEN T1.`Customer Names` END AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among the orders placed by Ei, how many orders have quantity greater than 4?",
+    "evidence": "Ei is the name of the customer; orders have quantity greater than 4 refer to OrderNumber WHERE Order Quantity > 4;",
+    "SQL": "SELECT SUM(CASE WHEN T1.`Order Quantity` > 4 AND T2.`Customer Names` = 'Ei ' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among the orders placed by Pacific Ltd, how many orders have been applied 5% discount ?",
+    "evidence": "orders by Pacific Ltd refer to OrderNumber where Customer Names = 'Pacific Ltd'; applied 5% discount refers to Discount Applied = 0.05;",
+    "SQL": "SELECT SUM(CASE WHEN T1.`Discount Applied` = 0.05 AND T2.`Customer Names` = 'Pacific Ltd' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the customer names of orders which have unit cost greater than 4000USD?",
+    "evidence": "unit cost greater than 4000USD refers to Unit Cost > 4000;",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.`Unit Cost` > 4000 THEN T1.`Customer Names` END AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please list the id and detailed position of all stores in Birmingham city.",
+    "evidence": "Latitude and Longitude coordinates can be used to identify the detailed position of stores; id refers to StoreID;",
+    "SQL": "SELECT StoreID, Latitude, Longitude FROM `Store Locations` WHERE `City Name` = 'Birmingham'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which city has the largest population?",
+    "evidence": "city has the largest population refers to City Name where MAX(Population);",
+    "SQL": "SELECT `City Name` FROM `Store Locations` ORDER BY Population DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many CDP stores are there in California?",
+    "evidence": "California is a state; CDP stores refer to StoreID where Type = 'CDP';",
+    "SQL": "SELECT SUM(CASE WHEN State = 'California' AND Type = 'CDP' THEN 1 ELSE 0 END) FROM `Store Locations`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please give the order number and product name of the order which has the lowest unit price.",
+    "evidence": "the lowest unit price refers to MIN(Unit Price);",
+    "SQL": "SELECT T1.OrderNumber, T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE REPLACE(T1.`Unit Price`, ',', '') = ( SELECT REPLACE(T1.`Unit Price`, ',', '') FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID ORDER BY REPLACE(T1.`Unit Price`, ',', '') LIMIT 1 )"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which product has the highest net profit in 2019?",
+    "evidence": "net profit can be computed as SUBTRACT(Unit Price, Unit Cost); the highest net profit in 2019 refers to MAX(Net Profit) where OrderDate LIKE '%/19'; product refers to Product Name;",
+    "SQL": "SELECT T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T1.OrderDate LIKE '%/%/19' ORDER BY REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the average unit price of a Cookware product?",
+    "evidence": "AVG(Unit Price where Product Name = 'Cookware');",
+    "SQL": "SELECT AVG(REPLACE(T1.`Unit Price`, ',', '')) FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T2.`Product Name` = 'Cookware'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please list all sale team names which had orders on 5/31/2018.",
+    "evidence": "had orders on 5/31/2018 refer to OrderDate = '5/31/18'; sale team names refer to Sales Team;",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T1.OrderDate = '5/31/18' THEN T2.`Sales Team` ELSE NULL END AS T FROM `Sales Orders` T1 INNER JOIN `Sales Team` T2 ON T2.SalesTeamID = T1._SalesTeamID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which sales team name has the least orders in 2019?",
+    "evidence": "sale team names refer to Sales Team; the least orders in 2019 refer to MIN(COUNT(OrderNumber where SUBSTR(OrderDate, -2) = '19'));",
+    "SQL": "SELECT T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T1.OrderDate LIKE '%/%/19' GROUP BY T2.`Sales Team` ORDER BY COUNT(T1.OrderNumber) ASC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "From 2018 to 2020, which year did the George Lewis group have the highest number of orders?",
+    "evidence": "George Lewis refers to Sales Team; the highest number of orders refers to MAX(COUNT(OrderNumber)); which year from 2018 to 2020 refers to SUBSTR(OrderDate, -2) IN ('18', '19', '20') GROUP BY SUBSTR(OrderDate, -2);",
+    "SQL": "SELECT SUBSTR(T1.OrderDate, -2, 2) FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T2.`Sales Team` = 'George Lewis' GROUP BY SUBSTR(T1.OrderDate, -2, 2) ORDER BY COUNT(T1.OrderNumber) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the percentage of total orders from stores in Orange County in 2018?",
+    "evidence": "DIVIDE(COUNT(OrderNumber where County = 'Orange County' and SUBSTR(OrderDate, -2) = '18'), COUNT(OrderNumber where SUBSTR(OrderDate, -2) = '18')) as percentage;",
+    "SQL": "SELECT CAST(SUM(CASE WHEN T2.County = 'Orange County' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T1.OrderDate LIKE '%/%/18'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which order number has the highest unit price?",
+    "evidence": "the highest unit price refers to MAX(Unit Price);",
+    "SQL": "SELECT OrderNumber FROM `Sales Orders` WHERE REPLACE(`Unit Price`, ',', '') = ( SELECT REPLACE(`Unit Price`, ',', '') FROM `Sales Orders` ORDER BY REPLACE(`Unit Price`, ',', '') DESC LIMIT 1 )"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which sales team id has the highest number of orders in 2018?",
+    "evidence": "the highest number of orders in 2018 refers to MAX(COUNT(OrderNumber where SUBSTR(OrderDate, -2) = '18'));",
+    "SQL": "SELECT _SalesTeamID FROM `Sales Orders` WHERE OrderDate LIKE '%/%/18' GROUP BY _SalesTeamID ORDER BY COUNT(_SalesTeamID) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the unit cost of order SO - 000103?",
+    "evidence": "OrderNumber = 'SO - 000103';",
+    "SQL": "SELECT DISTINCT T FROM ( SELECT IIF(OrderNumber = 'SO - 000103', `Unit Cost`, NULL) AS T FROM `Sales Orders` ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "In 2020, what were the total orders of all stores in Maricopa County?",
+    "evidence": "total orders refer to COUNT(OrderNumber); 2020 refers to SUBSTR(OrderDate, -2) = '20';",
+    "SQL": "SELECT SUM(CASE WHEN T2.County = 'Maricopa County' AND OrderDate LIKE '%/%/20' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the detailed position of the store which has order SO - 000115?",
+    "evidence": "Latitude and Longitude coordinates can be used to identify the detailed position of stores; store refers to StoreID WHERE OrderNumber = 'SO - 000115';",
+    "SQL": "SELECT T2.Latitude, T2.Longitude FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T1.OrderNumber = 'SO - 000115'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please calculate the total number of orders by each city in 2019.",
+    "evidence": "total number of orders refers to COUNT(OrderNumber); 2019 refers to OrderDate between 01-01-2019 and 31-12-2019; city refers to City Name;",
+    "SQL": "SELECT COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T1.OrderDate LIKE '%/%/19' GROUP BY T2.`City Name` HAVING COUNT(T1.OrderNumber)"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please list the names of customers who have total orders of over 3 in 2018.",
+    "evidence": "total orders of over 3 in 2018 refer to COUNT(OrderNumber) > 3 where SUBSTR(OrderDate, -2) = '18';",
+    "SQL": "SELECT DISTINCT IIF(COUNT(T2.CustomerID) > 3, T2.`Customer Names`, NULL) FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID WHERE T1.OrderDate LIKE '%/%/18' GROUP BY T1._CustomerID HAVING COUNT(T2.CustomerID)"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What were the total orders of Medsep Group from 2018 to 2020?",
+    "evidence": "Medsep Group is the name of the customer; total orders refer to COUNT(OrderNumber); from 2018 to 2020 refers to SUBSTR(OrderDate, -2) IN ('18', '19', '20');",
+    "SQL": "SELECT SUM(CASE WHEN SUBSTR(T1.OrderDate, -2) IN ('18', '19', '20') AND T2.`Customer Names` = 'Medsep Group' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please list the customer names whose order quantity was more than 5 on 6/1/2018.",
+    "evidence": "order quantity was more than 5 on 6/1/2018 refers to Order Quantity > 5 where OrderDate = 6/1/2018;",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN SUM(T1.`Order Quantity`) > 5 THEN T2.`Customer Names` END AS T FROM `Sales Orders` T1 INNER JOIN Customers T2 ON T2.CustomerID = T1._CustomerID WHERE T1.OrderDate = '6/1/18' GROUP BY T1._CustomerID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the percentage of total orders of Stephen Payne that had a net profit of over 1000?",
+    "evidence": "Sales Team = 'Stephen Payne'; net profit can be computed as SUBTRACT(Unit Price, Unit Cost); DIVIDE(COUNT(OrderNumber where Sales Team = 'Stephen Payne' and Net Profit > 1000)), (COUNT(OrderNumber where Sales Team = 'Stephen Payne')) as percentage;",
+    "SQL": "SELECT CAST(SUM(CASE WHEN REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') > 1000 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T2.`Sales Team` = 'Stephen Payne'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many sales team were from Northeast?",
+    "evidence": "Northeast is the name of the region;",
+    "SQL": "SELECT SUM(CASE WHEN Region = 'Northeast' THEN 1 ELSE 0 END) FROM `Sales Team`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "State the name of all city in Maricopa County along with its latitude and longitude.",
+    "evidence": "",
+    "SQL": "SELECT DISTINCT `City Name`, Latitude, Longitude FROM `Store Locations` WHERE County = 'Maricopa County'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which order have the highest unit cost?",
+    "evidence": "order have the highest unit cost refers to OrderNumber where MAX(Unit Cost);",
+    "SQL": "SELECT OrderNumber FROM `Sales Orders` WHERE REPLACE(`Unit Cost`, ',', '') = ( SELECT REPLACE(`Unit Cost`, ',', '') FROM `Sales Orders` ORDER BY REPLACE(`Unit Cost`, ',', '') DESC LIMIT 1 )"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List all the name of products with the ID of 30 to 40.",
+    "evidence": "products with the ID of 30 to 40 refer to Product Name WHERE ProductID BETWEEN 30 AND 40;",
+    "SQL": "SELECT T FROM ( SELECT CASE  WHEN ProductID BETWEEN 30 AND 40 THEN `Product Name` ELSE NULL END AS T FROM Products ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate ratio between the highest unit cost and the lowest unit cost?",
+    "evidence": "ratio can be calculated as DIVIDE(MAX(Unit_Cost)), MIN(Unit Cost);",
+    "SQL": "SELECT ( SELECT REPLACE(`Unit Cost`, ',', '') FROM `Sales Orders` WHERE REPLACE(`Unit Cost`, ',', '') = ( SELECT REPLACE(`Unit Cost`, ',', '') FROM `Sales Orders` ORDER BY REPLACE(`Unit Cost`, ',', '') DESC LIMIT 1 ) ORDER BY REPLACE(`Unit Cost`, ',', '') DESC LIMIT 1 ) / ( SELECT REPLACE(`Unit Cost`, ',', '') FROM `Sales Orders` WHERE REPLACE(`Unit Cost`, ',', '') = ( SELECT REPLACE(`Unit Cost`, ',', '') FROM `Sales Orders` ORDER BY REPLACE(`Unit Cost`, ',', '') ASC LIMIT 1 ) ORDER BY REPLACE(`Unit Cost`, ',', '') ASC LIMIT 1 )"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which product was ordered the most in 2018?",
+    "evidence": "product refers to Product Name; ordered the most in 2018 refers to MAX(COUNT(OrderNumber)) where SUBSTR(OrderDate, -2) = '18';",
+    "SQL": "SELECT T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T1.OrderDate LIKE '%/%/18' GROUP BY T1._ProductID ORDER BY COUNT(T1._ProductID) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many products sold by Adam Hernandez?",
+    "evidence": "products sold by Adam Hernandez refer to SUM(Order Quantity where Sales Team = 'Adam Hernandez');",
+    "SQL": "SELECT SUM(CASE WHEN T2.`Sales Team` = 'Adam Hernandez' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List all orders where its products were shipped from Daly City.",
+    "evidence": "shipped from Daly City refers to Store Locations where City Name = 'Daly City'; orders refer to OrderNumber;",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.`City Name` = 'Daly City' THEN T1.OrderNumber END AS T FROM `Sales Orders` T1 INNER JOIN `Store Locations` T2 ON T2.StoreID = T1._StoreID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many orders made by Rochester Ltd?",
+    "evidence": "Rochester Ltd is the name of the customer; orders refer to OrderNumber;",
+    "SQL": "SELECT SUM(CASE WHEN T1.`Customer Names` = 'Rochester Ltd' THEN 1 ELSE 0 END) FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "State the order number where Qualitest ordered the highest product quantity.",
+    "evidence": "Qualitest ordered the highest product quantity refers to Customer Names where MAX(Order Quantity);",
+    "SQL": "SELECT T1.OrderNumber FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID WHERE T2.`Customer Names` = 'Qualitest ' ORDER BY T1.`Order Quantity` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List the order for all in-store sales along with the products sold.",
+    "evidence": "orders for all in-store sales refer to OrderNumber where Sales Channel = 'In-Store'; products refer to Product Name;",
+    "SQL": "SELECT DISTINCT T1.OrderNumber, T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T1.`Sales Channel` = 'In-Store'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many online sales were made in May 2018 where products were shipped from Norman?",
+    "evidence": "online sales refer to OrderNumber where Sales Channel = 'Online'; May 2018 refers to OrderDate LIKE '5/%/18'; Norman is the name of the city;",
+    "SQL": "SELECT SUM(CASE WHEN T1.OrderDate LIKE '5/%/18' AND T1.`Sales Channel` = 'Online' AND T2.`City Name` = 'Norman' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among the products sold in Maricopa County, which was the least sold?",
+    "evidence": "the least sold product refers to Product Name where MIN(Order Quantity);",
+    "SQL": "SELECT T1.`Product Name` FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID INNER JOIN `Store Locations` AS T3 ON T3.StoreID = T2._StoreID WHERE T3.County = 'Maricopa County' ORDER BY T2.`Order Quantity` ASC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "State all the order numbers for sales team of Samuel Fowler.",
+    "evidence": "",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.`Sales Team` = 'Samuel Fowler' THEN T1.OrderNumber ELSE NULL END AS T FROM `Sales Orders` T1 INNER JOIN `Sales Team` T2 ON T2.SalesTeamID = T1._SalesTeamID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Find the number of baseball ordered in December 2017.",
+    "evidence": "Product Name = 'Baseball'; December 2017 refers to OrderDate LIKE '12/%/17';",
+    "SQL": "SELECT COUNT(T2.OrderNumber) FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID WHERE T1.`Product Name` = 'Baseball' AND T2.OrderDate LIKE '12/%/18'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Find the average number of ornaments sold each month in 2018.",
+    "evidence": "DIVIDE(SUM(Order Quantity where Product Name = 'Ornaments' and OrderDate LIKE '%/18'), 12);",
+    "SQL": "SELECT CAST(SUM(T2.`Order Quantity`) AS REAL) / 12 FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID WHERE T1.`Product Name` = 'Ornaments' AND T2.OrderDate LIKE '%/%/18'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Find the percentage of products that were shipped from Burbank in 2018?",
+    "evidence": "DIVIDE(SUM(Order Quantity where City Name = 'Burbank' and SUBSTR(OrderDate, -2) = '18')), (SUM(Order Quantity where SUBSTR(OrderDate, -2) = '18')) as percentage;",
+    "SQL": "SELECT CAST(SUM(CASE WHEN T3.`City Name` = 'Burbank' THEN T2.`Order Quantity` ELSE 0 END) AS REAL) * 100 / SUM(T2.`Order Quantity`) FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID INNER JOIN `Store Locations` AS T3 ON T3.StoreID = T2._StoreID WHERE T2.OrderDate LIKE '%/%/18'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the difference in order number from \"WARE-MKL1006\" and \"WARE-NBV1002\"?",
+    "evidence": "\"WARE-NBV1002\" and \"WARE-MKL1006\" are both WarehouseCode; difference in order number = Subtract(Count(OrderNumber where WarehouseCode = 'WARE-MKL1006'), Count(OrderNumber where WarehouseCode = 'WARE-NBV1002'))",
+    "SQL": "SELECT SUM(IIF(WarehouseCode = 'WARE-MKL1006', 1, 0)) - SUM(IIF(WarehouseCode = 'WARE-NBV1002', 1, 0)) AS difference FROM `Sales Orders`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Describe the product names delivered in 2021 for the customer \"Sundial\".",
+    "evidence": "delivered in 2021 refer to DeliveryDate LIKE '%/21'; 'Sundial' is the Customer Names",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.DeliveryDate LIKE '%/%/21' AND T1.`Customer Names` = 'Sundial ' THEN T3.`Product Name` END AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products T3 ON T3.ProductID = T2._ProductID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Write down the store IDs and region of the state \"Michigan\".",
+    "evidence": "\"Michigan\" is the State",
+    "SQL": "SELECT DISTINCT T2.StoreID, T1.Region FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode WHERE T2.State = 'Michigan'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Compare the total number of orders between customer \"Apollo Ltd\" and \"Pacific Ltd\".",
+    "evidence": "\"Apollo Ltd\" and \"Pacific Ltd\" are both Customer Names; total number of orders refers to COUNT(OrderNumber)",
+    "SQL": "SELECT SUM(CASE WHEN T2.`Customer Names` = 'Apollo Ltd' THEN 1 ELSE 0 END), SUM(CASE WHEN T2.`Customer Names` = 'Pacific Ltd' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Find the store ID with more orders between \"Aurora\" and \"Babylon\" city.",
+    "evidence": "\"Aurora\" refers to City Name = 'Aurora (Township)'; \"Babylon\" refers to City Name = 'Babylong (Town)'; more order refers to Max(Count(OrderNumber))",
+    "SQL": "SELECT T2.StoreID FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T2.`City Name` = 'Aurora (Township)' OR T2.`City Name` = 'Babylon (Town)' GROUP BY T2.StoreID ORDER BY COUNT(T1.OrderNumber) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List down the customer names and product names of the order made by \"Anthony Torres\" via distributor channel.",
+    "evidence": "\"Anthony Torres\" is the name of Sales Team; distributor channel refers to Sales Channel = 'Distributor'",
+    "SQL": "SELECT DISTINCT T1.`Customer Names`, T4.`Product Name` FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN `Sales Team` AS T3 ON T3.SalesTeamID = T2._SalesTeamID INNER JOIN Products AS T4 ON T4.ProductID = T2._ProductID WHERE T3.`Sales Team` = 'Anthony Torres' AND T2.`Sales Channel` = 'Distributor'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Mention the customer names and IDs which ordered total net profit of above 5000 USD through online channel.",
+    "evidence": "IDs refers to CustomerID; total net profit of above 5000 USD refers to SUM(Subtract(Unit Price, Unit Cost)) > 5000",
+    "SQL": "SELECT DISTINCT `Customer Names`, CustomerID FROM ( SELECT T2.`Customer Names`, T2.CustomerID , SUM(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')) AS T FROM `Sales Orders` T1 INNER JOIN Customers T2 ON T2.CustomerID = T1._CustomerID WHERE T1.`Sales Channel` = 'Online' GROUP BY T2.CustomerID ) WHERE T > 5000"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Find the net profit of the floral products which were delivered in 2021.",
+    "evidence": "floral product refers to Product Name = 'Floral'; total net profit = SUM(Subtract(Unit Price, Unit Cost)); delivered in 2021 refers to DeliveryDate LIKE '%/21'",
+    "SQL": "SELECT SUM(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')) FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T1.DeliveryDate LIKE '%/%/21' AND T2.`Product Name` = 'Floral'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Count the number of orders made from the store in city with population of 3000000 to 4000000.",
+    "evidence": "number of order refers to OrderNumber; population of 3000000 to 4000000 refers to Population BETWEEN 3000000 AND 4000000",
+    "SQL": "SELECT COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T2.Population BETWEEN 3000000 AND 4000000"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Name the products via wholesale channel of the store under Pacific/Honolulu time zone.",
+    "evidence": "products refers to Product Name; via wholesale channel refers to Sales Channel = 'Wholesale'",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T3.`Time Zone` = 'Pacific/Honolulu' AND T2.`Sales Channel` = 'Wholesale' THEN T1.`Product Name` ELSE NULL END AS T FROM Products T1 INNER JOIN `Sales Orders` T2 ON T2._ProductID = T1.ProductID INNER JOIN `Store Locations` T3 ON T3.StoreID = T2._StoreID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List the order numbers and product names which were ordered on 6th June, 2018.",
+    "evidence": "ordered on 6th June 2018 refers to OrderDate = '6/5/18'",
+    "SQL": "SELECT DISTINCT OrderNumber, `Product Name` FROM ( SELECT IIF(T2.OrderDate = '6/6/18', T2.OrderNumber, NULL) AS \"OrderNumber\" , IIF(T2.OrderDate = '6/6/18', T1.`Product Name`, NULL) AS \"Product Name\" FROM Products T1 INNER JOIN `Sales Orders` T2 ON T2._ProductID = T1.ProductID ) WHERE OrderNumber IS NOT NULL AND `Product Name` IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Find the average yearly order by customer Weimei Corp for 2018, 2019 and 2020.",
+    "evidence": "\"Weimei Corp\" is the Customer Names; in 2018, 2019 and 2020 refers to SUBSTR (OrderDate, -2) IN ('18', '19', '20') : Average order = Divide (Count (OrderNumber), 3)",
+    "SQL": "SELECT COUNT(T1.OrderNumber) / 3 FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID WHERE (T1.OrderDate LIKE '%/%/18' AND T2.`Customer Names` = 'Weimei Corp') OR (T1.OrderDate LIKE '%/%/19' AND T2.`Customer Names` = 'Weimei Corp') OR (T1.OrderDate LIKE '%/%/20' AND T2.`Customer Names` = 'Weimei Corp')"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Calculate the average monthly order and percentage of warehouse \"WARE-NMK1003\" in 2019. Among them, mention number of orders for floor lamps.",
+    "evidence": "\"WARE-NMK1003\" is the WarehouseCode; in 2019 refers to SUBSTR(OrderDate, -2) = '19'; average = Divide (Count (OrderNumber where SUBSTR(OrderDate, -2) = '19'), 12); Percentage = Divide (Count(OrderNumber where WarehouseCode = 'WARE-NMK1003'), Count(OrderNumber)) * 100; 'Floor Lamps' is the Product Name; number of orders refers to Count(OrderNumber)",
+    "SQL": "SELECT CAST(SUM(CASE WHEN T2.WarehouseCode = 'WARE-NMK1003' THEN 1 ELSE 0 END) AS REAL) / 12 , CAST(SUM(CASE WHEN T2.WarehouseCode = 'WARE-NMK1003' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T2.OrderNumber), COUNT(CASE WHEN T1.`Product Name` = 'Floor Lamps' AND T2.WarehouseCode = 'WARE-NMK1003' THEN T2.`Order Quantity` ELSE NULL END) FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID WHERE T2.OrderDate LIKE '%/%/19'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Indicate the procured dates for the customer whose ID is 11.",
+    "evidence": "ID is 11 refers to _CustomerID = 11;",
+    "SQL": "SELECT DISTINCT T FROM ( SELECT IIF(_CustomerID = 11, ProcuredDate, NULL) AS T FROM `Sales Orders` ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many orders through distributor were for the minimum quantity?",
+    "evidence": "\"Distributor\" is the Sales Channel; minimum quantity refers to Min(Order Quantity)",
+    "SQL": "SELECT SUM(CASE WHEN `Order Quantity` = 1 AND `Sales Channel` = 'Distributor' THEN 1 ELSE 0 END) FROM `Sales Orders`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List by ID all sales teams that have sold products at a 10% discount in store.",
+    "evidence": "ID refers to _SalesTeamID; 10% discount refers to Discount Applied = 0.1; 'In-Store' is the Sales Channel",
+    "SQL": "SELECT DISTINCT T FROM ( SELECT CASE  WHEN `Discount Applied` = '0.1' AND `Sales Channel` = 'In-Store' THEN _SalesTeamID ELSE NULL END AS T FROM `Sales Orders` ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many Borough-type stores located in the city of Brooklyn have a population of less than 3 million?",
+    "evidence": "\"Brooklyn\" is the CityName; population of less than 3 million refers to Population < 3000000",
+    "SQL": "SELECT SUM(CASE WHEN Population < 3000000 AND Type = 'Borough' AND `City Name` = 'Brooklyn' THEN 1 ELSE 0 END) FROM `Store Locations`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many states are in the Midwest region?",
+    "evidence": "",
+    "SQL": "SELECT COUNT(DISTINCT T) FROM ( SELECT CASE  WHEN Region = 'Midwest' THEN State ELSE NULL END AS T FROM Regions ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What are the top 10 products with the highest net profit?",
+    "evidence": "products refers to Product Name; highest net profit = Max(Subtract(Unit Price, Unit Cost))",
+    "SQL": "SELECT T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID GROUP BY T1._ProductID ORDER BY SUM(REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '')) DESC LIMIT 10"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Indicate the name of the customers who have placed an order of 3 units in February 2018.",
+    "evidence": "name of customer refers to Customer Names; order of 3 unit refers to Order Quantity = 3; in February 2018 refers to OrderDate LIKE '2/%/18'",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.`Order Quantity` = 3 AND T2.OrderDate LIKE '2/%/18' THEN T1.`Customer Names` END AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What are the names of the sales teams that have served to customer Apotheca, Ltd?",
+    "evidence": "name of sales team refers to Sales Team; 'Apotheca, Ltd' is the Customer Names",
+    "SQL": "SELECT DISTINCT T3.`Sales Team` FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN `Sales Team` AS T3 ON T3.SalesTeamID = T2._SalesTeamID WHERE T1.`Customer Names` = 'Apotheca, Ltd'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "In which regions are the stores that have shipped products through the WARE-UHY1004 warehouse?",
+    "evidence": "\"WARE-UHY1004\" is the WarehouseCode",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T3.WarehouseCode = 'WARE-UHY1004' THEN T1.Region END AS T FROM Regions T1 INNER JOIN `Store Locations` T2 ON T2.StateCode = T1.StateCode INNER JOIN `Sales Orders` T3 ON T3._StoreID = T2.StoreID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List all the cities where Shawn Torres sells Audio products.",
+    "evidence": "\"Shawn Torres\" is the name of Sales Team; Audio product refers to Product Name = 'Audio'",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T4.`Product Name` = 'Audio' AND T3.`Sales Team` = 'Shawn Torres' THEN T1.`City Name` ELSE NULL END AS T FROM `Store Locations` T1 INNER JOIN `Sales Orders` T2 ON T2._StoreID = T1.StoreID INNER JOIN `Sales Team` T3 ON T3.SalesTeamID = T2._SalesTeamID INNER JOIN Products T4 ON T4.ProductID = T2._ProductID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Lists the name of the product and customer who placed an order on 10/21/18 and it was delivered on 11/21/19.",
+    "evidence": "ordered on 10/21/18 refers to OrderDate = '10/21/18'; delivered on 11/21/19 refers to DeliveryDate = '11/21/19'; name of product refers to Product Name",
+    "SQL": "SELECT T3.`Product Name`, T1.`Customer Names` FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products AS T3 ON T3.ProductID = T2._ProductID WHERE T2.OrderDate = '10/21/18' AND T2.DeliveryDate = '11/21/19'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many stores procured products on October 27, 2018, in the city of Oregon?",
+    "evidence": "October 27, 2018 refers to ProcuredDate = '10/27/18'; 'Oregon' is the State",
+    "SQL": "SELECT SUM(CASE WHEN T1.ProcuredDate = '10/27/18' AND T2.`City Name` = 'Orlando' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What sales channels are used the most in the 3 places with the highest median income?",
+    "evidence": "highest median income refers to Max(Median Income)",
+    "SQL": "SELECT `Sales Channel` FROM ( SELECT T1.`Sales Channel` FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID ORDER BY T2.`Median Income` DESC LIMIT 3 ) GROUP BY `Sales Channel` ORDER BY COUNT(`Sales Channel`) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List the 5 sales teams that have made sales with the highest net profits.",
+    "evidence": "highest net profit = Max(Subtract (Unit Price, Unit Cost))",
+    "SQL": "SELECT T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID ORDER BY REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') DESC LIMIT 5"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the highest discount applied by the store located in a city of the state of Colorado whose land area is 111039036.",
+    "evidence": "highest discount applied refers to Max(Discount Applied)",
+    "SQL": "SELECT MAX(T1.`Discount Applied`) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T2.State = 'Colorado' AND T2.`Land Area` = 111039036"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many different time zones are there in the Northeast region?",
+    "evidence": "",
+    "SQL": "SELECT COUNT(DISTINCT T2.`Time Zone`) FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode WHERE T1.Region = 'Northeast'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What type of store is most popular in the South?",
+    "evidence": "in the South refers to Region = 'South'; type of store that is most popular refers to Max(Count(Type))",
+    "SQL": "SELECT DISTINCT CASE WHEN MAX(T2.Population) THEN T2.Type END FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode"
+},
+{
+    "db_id": "regional_sales",
+    "question": "To which region does the sales team that has used the WARE-MKL1006 warehouse the most times for its shipments belong?",
+    "evidence": "\"WARE-MKL1006\" is the WarehouseCode; most shipment to region refers to Max(Count(Region))",
+    "SQL": "SELECT T2.Region FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T1.WarehouseCode = 'WARE-MKL1006' GROUP BY T2.Region ORDER BY COUNT(T1.OrderNumber) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "In which city is the store with the highest sales order unit price located?",
+    "evidence": "highest sales order unit price refers to Max(Unit Price)",
+    "SQL": "SELECT T2.`City Name` FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE REPLACE(T1.`Unit Price`, ',', '') = ( SELECT REPLACE(T1.`Unit Price`, ',', '') FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID ORDER BY REPLACE(T1.`Unit Price`, ',', '') DESC LIMIT 1 ) ORDER BY REPLACE(T1.`Unit Price`, ',', '') DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many online purchases did Ole Group make in May 2019?",
+    "evidence": "\"Ole Group\" is the Customer Names; online purchase refers to Sales Channel = 'Online'; made in May 2019 refers to OrderDate LIKE '5/%/19'",
+    "SQL": "SELECT SUM(CASE WHEN T1.`Sales Channel` = 'Online' AND T2.`Customer Names` = 'Ole Group' AND T1.OrderDate LIKE '5/%/19' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many stores with less need for products, and purchased through a distributor, are located in Washtenaw County?",
+    "evidence": "less need for products refers to Order Quantity = 1; purchased through a distributor refers to Sales Channel = 'Distributor'; 'Harri County' is the County",
+    "SQL": "SELECT SUM(CASE WHEN T1.`Order Quantity` = 1 AND T1.`Sales Channel` = 'Distributor' AND T2.County = 'Washtenaw County' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the least purchased product by stores in the city of Santa Clarita?",
+    "evidence": "least purchased product refers to Min(Count(Product Name)); 'Santa Clarita' is the City",
+    "SQL": "SELECT T1.`Product Name` FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID INNER JOIN `Store Locations` AS T3 ON T3.StoreID = T2._StoreID WHERE T3.`City Name` = 'Santa Clarita' GROUP BY T1.`Product Name` ORDER BY COUNT(T1.`Product Name`) ASC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "At what Latitude and Longitude is the store that has used the WARE-PUJ1005 warehouse the fewest times?",
+    "evidence": "WARE-PUJ1005 is the WarehouseCode; fewest times refers to Min (Count(WarehouseCode))",
+    "SQL": "SELECT T2.Latitude, T2.Longitude FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T1.WarehouseCode = 'WARE-PUJ1005' GROUP BY T2.StoreID ORDER BY COUNT(T1.WarehouseCode) ASC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What percentage of sell orders on 04/04/2020 were for the state of New York?",
+    "evidence": "sales order on 04/04/2020 refers to OrderDate = '4/4/20'; 'New York' is\u00a0 the City Name; percentage = Divide (Sum(OrderNumber where City Name = 'New York'), Count (OrderNumber)) * 100",
+    "SQL": "SELECT CAST(SUM(CASE WHEN T2.State = 'New York' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.OrderNumber) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T1.OrderDate = '4/4/20'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the average land area of \u200b\u200bthe cities in which stores that purchased products for a unit price of 998.30 are located?",
+    "evidence": "average land area = Divide (Sum(Land Area), Count(Land Area))",
+    "SQL": "SELECT AVG(T2.`Land Area`) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T1.`Unit Price` = '998.30'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the average household income in cities in the state of New Hampshire where there are stores of the type city?",
+    "evidence": "\"New Hampshire\" is the State; average household income = AVG(Household Income)",
+    "SQL": "SELECT AVG(T2.`Household Income`) FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode WHERE T2.State = 'New Hampshire' AND T2.Type = 'City'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many sales teams are there in the Midwest?",
+    "evidence": "\"Midwest\" is the Region",
+    "SQL": "SELECT SUM(CASE WHEN Region = 'Midwest' THEN 1 ELSE 0 END) FROM `Sales Team`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Indicate order numbers with an order date after 1/1/2018.",
+    "evidence": "order date after 1/1/2018 refers to OrderDate > '1/1/2018'",
+    "SQL": "SELECT DISTINCT T FROM ( SELECT CASE  WHEN OrderDate > '1/1/18' THEN OrderNumber ELSE NULL END AS T FROM `Sales Orders` ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many sales channels does the sales team have in the Midwest?",
+    "evidence": "\"Midwest\" is the Region",
+    "SQL": "SELECT COUNT(T1.`Sales Channel`) FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T2.Region = 'Midwest'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which sales team has the other with the highest unit price?",
+    "evidence": "highest unit price refers to Max(Unit Price)",
+    "SQL": "SELECT T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE REPLACE(T1.`Unit Price`, ',', '') = ( SELECT REPLACE(T1.`Unit Price`, ',', '') FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID ORDER BY REPLACE(T1.`Unit Price`, ',', '') DESC LIMIT 1 ) ORDER BY REPLACE(T1.`Unit Price`, ',', '') DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which regions have online sales channels that have the most discounts?",
+    "evidence": "most discount refers to Max(Discount Applied)",
+    "SQL": "SELECT T2.Region FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T1.`Sales Channel` = 'Online' ORDER BY T1.`Discount Applied` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which Apollo Ltd customer's order number has the most expensive unit price, indicating the order date?",
+    "evidence": "\"Apollo Ltd\" is the Customer Names; most expensive unit price refers to max(Unit Price)",
+    "SQL": "SELECT T1.OrderNumber, T1.OrderDate FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID WHERE T2.`Customer Names` = 'Apollo Ltd' ORDER BY T1.`Unit Price` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Provide order number, warehouse code of customers Elorac, Corp.",
+    "evidence": "\"Elorac, Corp\" is the Customer Names",
+    "SQL": "SELECT DISTINCT T1.OrderNumber, T1.WarehouseCode FROM `Sales Orders` AS T1 INNER JOIN Customers AS T2 ON T2.CustomerID = T1._CustomerID WHERE T2.`Customer Names` = 'Elorac, Corp'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Name of customers who have ordered Cocktail Glasses by online sales channel.",
+    "evidence": "\"Cocktail Glasses\" is the Product Name; customer refers to Customer Names",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T3.`Product Name` = 'Cocktail Glasses' AND T2.`Sales Channel` = 'Online' THEN T1.`Customer Names` END AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID INNER JOIN Products T3 ON T3.ProductID = T2._ProductID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which store in Arizona has the most net profit?",
+    "evidence": "\"Arizona\" is the name of State; most net profit = Max(Subtract( Unit Price, Unit Cost))",
+    "SQL": "SELECT T2.StoreID FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID WHERE T2.State = 'Arizona' ORDER BY T1.`Unit Price` - T1.`Unit Cost` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How much more is the Florida store's computer product unit price than the Texas store?",
+    "evidence": "\"Florida\" and \"Texas\" are both the name of State; Computer product refers to Product Name = 'Computers; difference in unit price = Subtract (Unit Price where State = 'Florida', Unit Price where State = 'Texas')",
+    "SQL": "SELECT SUM(CASE WHEN T3.State = 'Florida' THEN T2.`Unit Price` ELSE 0 END) - SUM(CASE WHEN T3.State = 'Texas' THEN T2.`Unit Price` ELSE 0 END) FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID INNER JOIN `Store Locations` AS T3 ON T3.StoreID = T2._StoreID WHERE T1.`Product Name` = 'Computers'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among sales teams in Midwest region, which sales team has an order quantity greater than 5?",
+    "evidence": "order quantity greater than 5 refers to Order Quantity > 5",
+    "SQL": "SELECT DISTINCT T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T2.Region = 'Midwest' AND T1.`Order Quantity` > 5"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please indicate store id in the state of California that have been applied 20% discount in store.",
+    "evidence": "\"California\" is the name of State; in store refers to Sales Channel = 'In-Store'; 20% discount refers to Discount Applied = '0.2'",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.State = 'California' AND T1.`Sales Channel` = 'In-Store' AND T1.`Discount Applied` = 0.2 THEN T2.StoreID END AS T FROM `Sales Orders` T1 INNER JOIN `Store Locations` T2 ON T2.StoreID = T1._StoreID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "List the name of the customer with the most number of order quantity from 2018 to 2020.",
+    "evidence": "name of customer refers to Customer Names; from 2018 to 2020 refers to OrderDate between '1/1/2018' and '31/12/2020'; most number of order quantity refers to Order Quantity = 8",
+    "SQL": "SELECT T1.`Customer Names` FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID WHERE T2.OrderDate LIKE '%/%/18' OR T2.OrderDate LIKE '%/%/19' OR T2.OrderDate LIKE '%/%/20' ORDER BY T2.`Order Quantity` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Please indicate total order quantity of product Candles and calculate the percentage of such product among all the orders.",
+    "evidence": "total order quantity refers to Sum (Order Quantity); 'Candles' is the Products Name; percentage = Divide (Sum(Order Quantity where Product Name = 'Candles'), Sum(Order Quantity)) * 100",
+    "SQL": "SELECT SUM(CASE WHEN T1.`Product Name` = 'Candles' THEN T2.`Order Quantity` ELSE 0 END), CAST(SUM(CASE WHEN T1.`Product Name` = 'Candles' THEN T2.`Order Quantity` ELSE 0 END) AS REAL) * 100 / SUM(T2.`Order Quantity`) FROM Products AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._ProductID = T1.ProductID INNER JOIN `Store Locations` AS T3 ON T3.StoreID = T2._StoreID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which region is Joshua Bennet located in?",
+    "evidence": "\"Joshua Bennett\" is the name of Sales Team",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN `Sales Team` = 'Joshua Bennett' THEN Region ELSE NULL END AS T FROM `Sales Team` ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the store id of the store located in the most populous county?",
+    "evidence": "most populous country refers to Max(Population)",
+    "SQL": "SELECT CASE WHEN MAX(Population) THEN StoreID END FROM `Store Locations`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many sales teams are there in the Midwest?",
+    "evidence": "\"Midwest\" is the Region",
+    "SQL": "SELECT SUM(CASE WHEN Region = 'Midwest' THEN 1 ELSE 0 END) FROM `Sales Team`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the type of store located in the city with the highest amount of water area?",
+    "evidence": "type of store in City refers to Type = 'City'; highest amount of water area refers to Max(Water Area)",
+    "SQL": "SELECT CASE WHEN MAX(`Water Area`) THEN Type END FROM `Store Locations`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many online orders were shipped during the month of June 2018?",
+    "evidence": "online orders refers to Sales Channel = 'Online'; shipped during the month of June 2018 refers to SUBSTR(ShipDate, 1, 1) = '6' AND SUBSTR(ShipDate,-2) = '18'",
+    "SQL": "SELECT SUM(IIF(ShipDate LIKE '6/%/18' AND `Sales Channel` = 'Online', 1, 0)) FROM `Sales Orders`"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How much is the discount applied to the order with the highest unit price?",
+    "evidence": "highest unit price refers to Max(Unit Price)",
+    "SQL": "SELECT `Discount Applied` FROM `Sales Orders` WHERE REPLACE(`Unit Price`, ',', '') = ( SELECT REPLACE(`Unit Price`, ',', '') FROM `Sales Orders` ORDER BY REPLACE(`Unit Price`, ',', '') DESC LIMIT 1 ) ORDER BY REPLACE(`Unit Price`, ',', '') DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the name of the product with the highest net profit?",
+    "evidence": "highest net profit = Max(Subtract (Unit Price, Unit Cost)); name of product refers to Product Name",
+    "SQL": "SELECT T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID ORDER BY REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "In the Northeast region, what is the average household income for each city located in the state with the highest number of stores?",
+    "evidence": "average household income = Divide (Sum(Household Income), Count(City Name)); highest number of store refers to Max(Count(StoreID))",
+    "SQL": "SELECT AVG(T2.`Household Income`) FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode WHERE T1.Region = 'Northeast' GROUP BY T2.State ORDER BY COUNT(T2.StoreID) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "In which region can you find the stores located in the state whose median income is no more than 30,000?",
+    "evidence": "median income no more than 30,000 refers to Median Income < 30,000",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.`Median Income` < 30000 THEN T1.Region END AS T FROM Regions T1 INNER JOIN `Store Locations` T2 ON T2.StateCode = T1.StateCode ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "In the West, how many stores are there in the city whose land area is below 20,000,000?",
+    "evidence": "\"West\" is the Region; land area is below 20,000,000 refers to Land Area < 20,000,000",
+    "SQL": "SELECT SUM(CASE WHEN T1.Region = 'West' AND T2.`Land Area` < 20000000 THEN 1 ELSE 0 END) FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the name of the customer who purchased the product with the highest net profiit?",
+    "evidence": "highest net profit = Max(Subtract (Unit Price, Unit Cost)); name of customer refers to Customer Names",
+    "SQL": "SELECT `Customer Names` FROM ( SELECT T1.`Customer Names`, T2.`Unit Price` - T2.`Unit Cost` AS \"net profit\" FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID ) ORDER BY `net profit` DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "In 2019, how many orders were shipped by the sales team with the highest number of orders in the said year? Provide the name of the sales team.",
+    "evidence": "shipped refers to ShipDate; in 2019 refers to shipped in 2019 refers to SUBSTR(ShipDate, -2) = '19'; order in the said year refers to SUBSTR(OrderDate, -2) = '19'; highest number of order refers to Max(Count(OrderNumber))",
+    "SQL": "SELECT COUNT(T1.OrderNumber), T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T1.OrderDate LIKE '%/%/19' AND T1.ShipDate LIKE '%/%/19' GROUP BY T2.`Sales Team` ORDER BY COUNT(T1.OrderNumber) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Among the products with an order quantity of no less than 5 that was shipped in the month of May 2019, what is the name of the product with the lowest net profit?",
+    "evidence": "order quantity of no less than 5 refers to Order Quantity > 5; shipped in the month of May 2019 refers to ShipDate LIKE '5/%/19'; lowest net profit = Min(Subtract(Unit Price, Unit Cost)); name of product refers to Products Name",
+    "SQL": "SELECT T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID WHERE T1.`Order Quantity` > 5 AND ShipDate LIKE '5/%/19' ORDER BY REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') ASC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the detailed coordinates of the store where the product with the 4th highest profit were purchased from?",
+    "evidence": "detailed coordinates refers to Latitude, Longitude; highest net profit = Max(Subtract(Unit Price, Unit Cost))",
+    "SQL": "SELECT T2.Latitude, T2.Longitude FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID ORDER BY REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') DESC LIMIT 3, 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many orders were shipped by the sales team with the highest amount of shipped orders in 2020? Give the name of the said sales team.",
+    "evidence": "shipped refers to ShipDate; in 2020 refers to SUBSTR(ShipDate, -2) = '20'; highest amount of shipped orders refers to Max(Count(OrderNumber))",
+    "SQL": "SELECT COUNT(T1.OrderNumber), T2.`Sales Team` FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE T1.ShipDate LIKE '%/%/20' GROUP BY T2.`Sales Team` ORDER BY COUNT(T1.OrderNumber) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Between 2018 to 2020, what is the average amount of shipped orders per year under Carl Nguyen?",
+    "evidence": "shipped refers to ShipDate; between 2018 and 2020 refers to SUBSTR(ShipDate, -2) IN ('18', '19', '20'); 'Carl Nguyen' is the name of Sales Team; average shipped orders per year = Divide (Count(OrderNumber), 3)",
+    "SQL": "SELECT CAST(COUNT(T1.OrderNumber) AS REAL) / 3 FROM `Sales Orders` AS T1 INNER JOIN `Sales Team` AS T2 ON T2.SalesTeamID = T1._SalesTeamID WHERE (T2.`Sales Team` = 'Carl Nguyen' AND ShipDate LIKE '%/%/18') OR (T2.`Sales Team` = 'Carl Nguyen' AND ShipDate LIKE '%/%/19') OR (T2.`Sales Team` = 'Carl Nguyen' AND ShipDate LIKE '%/%/20')"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the amount of discount applied to the product with the highest net profit and what is the name of the said product?",
+    "evidence": "highest net profit refers to Max(Subtract(Unit Price, Unit Cost)); name of product refers to Product Name",
+    "SQL": "SELECT T1.`Unit Price` * T1.`Discount Applied`, T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID ORDER BY REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What are the names of the top 3 customers who paid the highest amount of price per order after discount?",
+    "evidence": "highest price per order after discount refers to Max(Subtract(Multiply (Unit Price, Order Quantity), Discount Applied)); name of customer refers to Customer Names",
+    "SQL": "SELECT `Customer Names` FROM ( SELECT T1.`Customer Names` , REPLACE(T2.`Unit Price`, ',', '') * T2.`Order Quantity` - REPLACE(T2.`Unit Price`, ',', '') * T2.`Discount Applied` AS T FROM Customers T1 INNER JOIN `Sales Orders` T2 ON T2._CustomerID = T1.CustomerID ) ORDER BY T DESC LIMIT 3"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Which sales channel was most preferred in commercializing products in January 2020 based on the number of orders placed?",
+    "evidence": "order refers to OrderDate; in 2020 refers to Substr(OrderDate, -2) = '20'; January refers to Substr(OrderDate, 1, 1) = '1';\u00a0 most preferred sales channel refers to Sales Channel where Max(Count(OrderNumber))",
+    "SQL": "SELECT `Sales Channel` FROM `Sales Orders` WHERE OrderDate LIKE '1/%/20' GROUP BY `Sales Channel` ORDER BY COUNT(`Sales Channel`) DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Name the product that was registered in the sales order 'SO - 0005951'.",
+    "evidence": "sales order 'SO - 0005951' refers to OrderNumber = 'SO - 0005951'; product refers to Product Name",
+    "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.OrderNumber = 'SO - 0005951' THEN T1.`Product Name` ELSE NULL END AS T FROM Products T1 INNER JOIN `Sales Orders` T2 ON T2._ProductID = T1.ProductID ) WHERE T IS NOT NULL"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Identify the store location and sales team who processed the sales order 'SO - 0001004'.",
+    "evidence": "sales order 'SO - 0001004' refers to OrderNumber = 'SO - 0001004'; store location refers to City Name",
+    "SQL": "SELECT T3.`Sales Team`, T1.`City Name` FROM `Store Locations` AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._StoreID = T1.StoreID INNER JOIN `Sales Team` AS T3 ON T3.SalesTeamID = T2._SalesTeamID WHERE T2.OrderNumber = 'SO - 0001004'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "Identify the top customer of the store located in Gilbert, Arizona based on net profit associated with the customer relationship in 2019.",
+    "evidence": "\"Gilbert\" is the City Name; 'Arizona' is the name of State; customer relationship in 2019 refers to ProcuredDate LIKE '%/19'; top net profit refers to Max(Subtract(Unit Price, Unit Cost))",
+    "SQL": "SELECT T1.`Customer Names` FROM Customers AS T1 INNER JOIN `Sales Orders` AS T2 ON T2._CustomerID = T1.CustomerID INNER JOIN `Store Locations` AS T3 ON T3.StoreID = T2._StoreID WHERE T3.`City Name` = 'Gilbert' AND T2.ProcuredDate LIKE '%/%/19' ORDER BY REPLACE(T2.`Unit Price`, ',', '') - REPLACE(T2.`Unit Cost`, ',', '') DESC LIMIT 1"
+},
+{
+    "db_id": "regional_sales",
+    "question": "How many sales orders were processed by the store located in Chandler in 2020?",
+    "evidence": "\"Chandler\" is the City Name; orders refers to OrderDate; in 2020 refers to Substr(OrderDate, -2) = '20'",
+    "SQL": "SELECT SUM(CASE WHEN T2.`City Name` = 'Chandler' AND T1.OrderDate LIKE '%/%/20' THEN 1 ELSE 0 END) FROM `Sales Orders` AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StoreID = T1._StoreID"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What is the average household income of Glendale?",
+    "evidence": "\"Glendale\" is the City Name; Average household income refers to avg(Household Income)",
+    "SQL": "SELECT AVG(`Household Income`) FROM `Store Locations` WHERE `City Name` = 'Glendale'"
+},
+{
+    "db_id": "regional_sales",
+    "question": "What was the best discount applied to sales orders in 2020?",
+    "evidence": "sales orders in 2020 refers to Substr(OrderDate, -2) = '20'; best discount applied refers to Max(Discount Applied)",
+    "SQL": "SELECT MAX(`Discount Applied`) FROM `Sales Orders` WHERE OrderDate LIKE '%/%/20'"
+}]
