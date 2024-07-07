@@ -12,3 +12,4 @@ mysql-connector-python
 pandas
 chainlit
 scikit-learn
+ChatAnthropic
