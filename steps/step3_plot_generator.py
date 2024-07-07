@@ -17,6 +17,8 @@ class PlotGeneratorNode:
         LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
         csv_file = state["text2sql_results"]["csv_path"]
         user_query = state["question"]
+        hypothesis = state["data_analytics_results"]["hypothesis"]
+        csv_summery = state["data_analytics_results"]["summary_text"]
         plot_generator_results = {}
         df = pd.read_csv(csv_file)
         num_rows = len(df)
@@ -24,21 +26,24 @@ class PlotGeneratorNode:
         columns_text = "The CSV file Columns are: " + ", ".join(columns)
         LoggerManager.log_flow(f"CSV file loaded with {num_rows} rows and columns: {columns}", node=self.__class__.__name__)
 
+        #Tha main scenario is when the CSV file has more than one row
         if num_rows > 1:
             parser = JsonOutputParser(pydantic_object=TextAndCode)
 
             prompt = PromptTemplate(
-                template="Answer the user query.\n{format_instructions}\n{user_prompt}\n{columns_text}",
-                input_variables=["user_prompt", "columns_text"],
+                template="Answer the user query.\n{format_instructions}\n{user_prompt}\n{hypothesis}\n{csv_summery}",
+                input_variables=["user_prompt", "hypothesis", "csv_summery"],
                 partial_variables={"format_instructions": parser.get_format_instructions()},
             )
 
             chain = prompt | self.llm | parser
 
-            result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text})
+            result = chain.invoke({"user_prompt": user_query, "hypothesis":hypothesis,"csv_summery": csv_summery})
             plot_generator_results["answer"] = result["intro"]
             plot_generator_results["plot_code"] = result["code"]
             LoggerManager.log_flow(f"Plot code generated:\n```python\n{result['code']}\n```", node=self.__class__.__name__, state=LogState.RESPONSE)
+        
+        #The edge case is when the CSV file has only one row
         else:
             output_parser = StrOutputParser()
             row = df.to_dict(orient='records')[0]
@@ -52,6 +57,7 @@ class PlotGeneratorNode:
             result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text, "firstRow_text": firstRow_text})
             plot_generator_results["answer"] = result[0]
             LoggerManager.log_flow(f"Answer generated for single row data:\n{result[0]}", node=self.__class__.__name__, state=LogState.RESPONSE)
+            
         state["plot_generator_results"] = plot_generator_results
         LoggerManager.log_flow(f"State updated with plot generator results:\n{plot_generator_results}", node=self.__class__.__name__)
         return state
@@ -61,7 +67,7 @@ class PlotGeneratorNode:
     
 # Define your desired data structure.
 class TextAndCode(BaseModel):
-    intro: str = Field(description="Short rephrased explanation and answer to user prompt to put as plot image header")
+    intro: str = Field(description="Short explanation and answer to user prompt to put as plot image header")
     code: str = Field(description="Python code to generate one plot from the CSV file in 'data.csv' to answer the user query")
     
 if __name__ == "__main__":
