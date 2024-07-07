@@ -6,6 +6,10 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 import pandas as pd
 from langchain_core.output_parsers import StrOutputParser
 from logging_config import LoggerManager, LogState
+from matplotlib import pyplot as plt
+from glob import glob
+import os
+import re
 
 class PlotGeneratorNode:
     def __init__(self) -> None:
@@ -58,8 +62,21 @@ class PlotGeneratorNode:
             plot_generator_results["answer"] = result[0]
             LoggerManager.log_flow(f"Answer generated for single row data:\n{result[0]}", node=self.__class__.__name__, state=LogState.RESPONSE)
             
-        state["plot_generator_results"] = plot_generator_results
         LoggerManager.log_flow(f"State updated with plot generator results:\n{plot_generator_results}", node=self.__class__.__name__)
+
+        LoggerManager.log_flow(f"Started", node='PlotCode', state=LogState.START)
+        code = plot_generator_results["plot_code"]
+        code = re.sub(r"plt\.show\(\)", "", code)
+        plt.switch_backend('Agg')
+        exec(code)
+        plot_id = len(glob("static/plot_*.png"))
+        plot_filename = os.path.join("static", f"plot_{plot_id}.png")
+        plt.savefig(plot_filename)
+        plt.close()
+        plot_generator_results["plot_filename"] = plot_filename
+        state["plot_generator_results"] = plot_generator_results
+
+        LoggerManager.log_flow(f"Save plot in: {plot_filename}", node='PlotCode', state=LogState.FINISH)
         return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:

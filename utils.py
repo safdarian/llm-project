@@ -79,7 +79,7 @@ class LLM:
         self.llm = ChatOpenAI(
             model=self.model_name,
             temperature=self.temperature,
-            max_tokens=None,
+            max_tokens=300,
             timeout=None,
             max_retries=2,
             api_key=self.config["api"]["openAI"],
