@@ -14,6 +14,10 @@ What is the average household income of Glendale?
 What are the names of the top 3 customers who paid the highest amount of price per order after discount?
 Among the products with an order quantity of no less than 5 that was shipped in the month of May 2019, what is the name of the product with the lowest net profit?
 What is the name of the customer who purchased the product with the highest net profiit?
+In the West, how many stores are there in the city whose land area is below 20,000,000?
+What is the name of the product with the highest net profit?
+How much is the discount applied to the order with the highest unit price?
+"What is the type of store located in the city with the highest amount of water area?"
 
 Rewritten:
 What are the number of sales teams per region?

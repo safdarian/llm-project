@@ -793,27 +793,9 @@
 },
 {
     "db_id": "regional_sales",
-    "question": "What is the type of store located in the city with the highest amount of water area?",
-    "evidence": "type of store in City refers to Type = 'City'; highest amount of water area refers to Max(Water Area)",
-    "SQL": "SELECT CASE WHEN MAX(`Water Area`) THEN Type END FROM `Store Locations`"
-},
-{
-    "db_id": "regional_sales",
     "question": "How many online orders were shipped during the month of June 2018?",
     "evidence": "online orders refers to Sales Channel = 'Online'; shipped during the month of June 2018 refers to SUBSTR(ShipDate, 1, 1) = '6' AND SUBSTR(ShipDate,-2) = '18'",
     "SQL": "SELECT SUM(IIF(ShipDate LIKE '6/%/18' AND `Sales Channel` = 'Online', 1, 0)) FROM `Sales Orders`"
-},
-{
-    "db_id": "regional_sales",
-    "question": "How much is the discount applied to the order with the highest unit price?",
-    "evidence": "highest unit price refers to Max(Unit Price)",
-    "SQL": "SELECT `Discount Applied` FROM `Sales Orders` WHERE REPLACE(`Unit Price`, ',', '') = ( SELECT REPLACE(`Unit Price`, ',', '') FROM `Sales Orders` ORDER BY REPLACE(`Unit Price`, ',', '') DESC LIMIT 1 ) ORDER BY REPLACE(`Unit Price`, ',', '') DESC LIMIT 1"
-},
-{
-    "db_id": "regional_sales",
-    "question": "What is the name of the product with the highest net profit?",
-    "evidence": "highest net profit = Max(Subtract (Unit Price, Unit Cost)); name of product refers to Product Name",
-    "SQL": "SELECT T2.`Product Name` FROM `Sales Orders` AS T1 INNER JOIN Products AS T2 ON T2.ProductID = T1._ProductID ORDER BY REPLACE(T1.`Unit Price`, ',', '') - REPLACE(T1.`Unit Cost`, ',', '') DESC LIMIT 1"
 },
 {
     "db_id": "regional_sales",
@@ -826,12 +808,6 @@
     "question": "In which region can you find the stores located in the state whose median income is no more than 30,000?",
     "evidence": "median income no more than 30,000 refers to Median Income < 30,000",
     "SQL": "SELECT T FROM ( SELECT DISTINCT CASE  WHEN T2.`Median Income` < 30000 THEN T1.Region END AS T FROM Regions T1 INNER JOIN `Store Locations` T2 ON T2.StateCode = T1.StateCode ) WHERE T IS NOT NULL"
-},
-{
-    "db_id": "regional_sales",
-    "question": "In the West, how many stores are there in the city whose land area is below 20,000,000?",
-    "evidence": "\"West\" is the Region; land area is below 20,000,000 refers to Land Area < 20,000,000",
-    "SQL": "SELECT SUM(CASE WHEN T1.Region = 'West' AND T2.`Land Area` < 20000000 THEN 1 ELSE 0 END) FROM Regions AS T1 INNER JOIN `Store Locations` AS T2 ON T2.StateCode = T1.StateCode"
 },
 {
     "db_id": "regional_sales",
