@@ -29,7 +29,6 @@ class LlmJudgment:
             return base64.b64encode(image_file.read()).decode("utf-8")
 
     def eval_relevancy(self):
-        print("### Start Relevancy:")
         image_path = self.report["image_path"]
         base64_image = self.encode_image(image_path)
         initial_question = self.report["initial_input"]
@@ -46,7 +45,7 @@ Initial Question: {initial_question}
 Generated Chart: (See attached image)
 Generated Insight: {generated_insight}
 
-Analysis and just score 0 to 100 Relevancy:""",
+Score 0 to 100 Relevancy (just return the score):""",
                     },
                     {
                         "type": "image_url",
@@ -77,7 +76,7 @@ Initial Question: {initial_question}
 Generated Chart: (See attached image)
 Generated Insight: {generated_insight}
 
-Analysis and score (0-100) of the Insightfulness:""",
+Score (0-100) of the Insightfulness (just return the score):""",
                     },
                     {
                         "type": "image_url",
@@ -85,7 +84,6 @@ Analysis and score (0-100) of the Insightfulness:""",
                     },
                 ]
             ),
-
         ]
 
         results = self.llm.llm.invoke(messages)
@@ -111,8 +109,7 @@ Analysis and score (0-100) of the Insightfulness:""",
 
 Generated Chart: (See attached image)
 
-Analysis and score (0-100) of the
-Visualization Quality:""",
+Score (0-100) of the Visualization Quality: (just return the score):""",
                     },
                     {
                         "type": "image_url",
@@ -140,20 +137,22 @@ Visualization Quality:""",
 
         messages = [
             HumanMessage(
-                content=f"""Analyze the data storytelling quality of the generated report, considering the initial question, the generated chart, and the generated insight. Evaluate how effectively it combines data and narrative to convey a coherent and engaging story. After your analysis, provide a data storytelling quality score out of 100.
+                content=[
+                    {
+                        "type": "text",
+                        "text": f"""Analyze the data storytelling quality of the generated report, considering the initial question, the generated chart, and the generated insight. Evaluate how effectively it combines data and narrative to convey a coherent and engaging story. After your analysis, provide a data storytelling quality score out of 100.
 
 Initial Question: {initial_question}
 Generated Chart: (See attached image)
 Generated Insight: {generated_insight}
 
-Analysis and score (0-100) of the
-Data Storytelling Quality:"""
-            ),
-            HumanMessage(
-                content={
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/png;base64,{base64_image}"},
-                }
+Score (0-100) of the Data Storytelling Quality: (just return the score):""",
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{base64_image}"},
+                    },
+                ]
             ),
         ]
 
