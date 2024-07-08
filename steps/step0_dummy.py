@@ -13,6 +13,7 @@ class Step0_DummyNode:
         pass
 
     def forward(self, state: AgentState):
+        state["fallback_info"]["current_state"] += 1
         return state
     
     def __call__(self, *args: Any, **kwds: Any) -> Any:

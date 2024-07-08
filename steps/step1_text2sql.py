@@ -65,6 +65,11 @@ class Text2SQLNode:
         
         # Question
         question = state.get("question")
+
+        if state.get("fallback_info"):
+            if state["fallback_info"].get("fallback_confirm_response"):
+                question += " {}".format(state["fallback_info"]["fallback_confirm_response"])
+        LoggerManager.log_flow(question)
         parser = JsonOutputParser(pydantic_object=TextToSQL)
         prompt = PromptTemplate(
             template="Answer the user query.\n{format_instructions}\nThe User initial prompt: {user_prompt}\nThe Database schema of Tables and their first row values are: {db_schema}",
@@ -115,6 +120,7 @@ class Text2SQLNode:
             except Exception:
                 current_result = []
             results.append((current_result, order))
+            
         results = sorted(results, key=lambda x: len(x[0]))
 
         df = pd.DataFrame(results[-1][0])

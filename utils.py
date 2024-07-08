@@ -1,6 +1,6 @@
 from typing_extensions import TypedDict
 from langchain_openai import ChatOpenAI
-# from langchain_anthropic import ChatAnthropic
+from langchain_anthropic import ChatAnthropic
 from langchain_core.messages.base import BaseMessage
 import json
 from langchain_together import ChatTogether
@@ -15,6 +15,7 @@ class AgentState(TypedDict):
     data_storytelling_results: dict
     chat_history: list[BaseMessage]
     answer_generation: str
+    fallback_info: str
 
 
 class ConfigManager(dict):
@@ -55,11 +56,11 @@ class LLM:
 
     def init_cluade(self):
         self.model_name = self.additional_config.get("model", "claude-3-opus-20240229")
-        # self.llm = ChatAnthropic(
-        #     model=self.model_name,
-        #     temperature=self.temperature,
-        #     api_key=self.config["api"]["cluade"],
-        # )
+        self.llm = ChatAnthropic(
+            model=self.model_name,
+            temperature=self.temperature,
+            api_key=self.config["api"]["cluade"],
+        )
 
     def init_localMLX(self):
         from langchain_community.llms.mlx_pipeline import MLXPipeline
