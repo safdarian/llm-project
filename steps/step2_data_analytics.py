@@ -12,28 +12,30 @@ from logging_config import LoggerManager, LogState
 
 class DataAnalyticsNode:
     def __init__(self) -> None:
-        self.llm = LLM("togetherAI")
-        # self.llm = LLM("openAI")
+        #self.llm = LLM("togetherAI")
+        self.llm = LLM("openAI")
         # self.llm = LLM("cluade")
 
     def forward(self, state: AgentState):
         LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
+        try:
+            # Load the CSV file
+            csv_path = state["text2sql_results"]["csv_path"]
+            df = pd.read_csv(csv_path)
 
-        # Load the CSV file
-        csv_path = state["text2sql_results"]["csv_path"]
-        df = pd.read_csv(csv_path)
+            # Generate summary of the CSV file
+            summary_text = self.generate_summary_text(df)
 
-        # Generate summary of the CSV file
-        summary_text = self.generate_summary_text(df)
+            # Formulate hypothesis based on the summary and user question
+            user_question = state["question"]
+            hypothesis = self.formulate_hypothesis(summary_text, user_question)
 
-        # Formulate hypothesis based on the summary and user question
-        user_question = state["question"]
-        hypothesis = self.formulate_hypothesis(summary_text, user_question)
+            # Update state with summary and hypothesis
+            state["data_analytics_results"] = {"summary_text": summary_text, "hypothesis": hypothesis}
 
-        # Update state with summary and hypothesis
-        state["data_analytics_results"] = {"summary_text": summary_text, "hypothesis": hypothesis}
-
-        LoggerManager.log_flow(f"State updated with data analytics results:\n{state['data_analytics_results']}", node=self.__class__.__name__, state=LogState.RESPONSE)
+            LoggerManager.log_flow(f"State updated with data analytics results:\n{state['data_analytics_results']}", node=self.__class__.__name__, state=LogState.RESPONSE)
+        except:
+            LoggerManager.log_flow_metric(node=self.__class__.__name__, state=LogState.ERROR)
         return state
 
     def generate_summary_text(self, df: pd.DataFrame) -> str:

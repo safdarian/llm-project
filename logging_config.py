@@ -3,6 +3,7 @@ import logging
 import logging.config
 from enum import Enum
 from utils import AgentState
+import json
 
 log_directory = "logs"
 eval_log_directory = f"{log_directory}/eval_logs"
@@ -67,7 +68,7 @@ class LoggerManager:
         flow_logger.info(log_message)
 
     @staticmethod
-    def save_final_io(report:AgentState):
+    def save_final_io(report: AgentState):
         files_number = len(os.listdir(eval_log_directory))
         final_log_directory = os.path.join(eval_log_directory, f'report_{files_number}')
         os.makedirs(final_log_directory, exist_ok=True)
@@ -81,15 +82,22 @@ class LoggerManager:
         
         try:
             # Copy Image
-            copy_file(report["plot_generator_results"]["plot_filename"], os.path.join(final_log_directory,'plot.png'))
-            final_output = report["data_storytelling_results"] #TODO
+            plot_filename = report["plot_generator_results"]["plot_filename"]
+            copy_file(plot_filename, os.path.join(final_log_directory, 'plot.png'))
+            final_output = report["data_storytelling_results"]
         except:
-            final_output = report["answer_generation"]
+            print("Error in saving final IO")
+            return
 
-        report_file = os.path.join(final_log_directory, "final_output.txt")
-        log_message = f"human: {report['question']}\n\nAI: {final_output}"
+        initial_input = report['question']
+        log_message = {
+            "initial_input": initial_input,
+            "final_output": final_output,
+            "image_path": os.path.join(final_log_directory, 'plot.png')
+        }
 
+        report_file = os.path.join(final_log_directory, "final_output.json")
         with open(report_file, "w") as f:
-            f.write(log_message)
+            json.dump(log_message, f, indent=4)
 
         final_io_logger.info(log_message)
