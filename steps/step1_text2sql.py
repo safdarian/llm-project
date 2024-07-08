@@ -17,8 +17,8 @@ class Text2SQLNode:
     def __init__(self) -> None:
         self.config = ConfigManager()
         self.db = DBManager(self.config["database"])
-        self.llm = LLM("togetherAI")
-        # self.llm = LLM("openAI")
+        #self.llm = LLM("togetherAI")
+        self.llm = LLM("openAI")
         # self.llm = LLM("cluade")
         self.examples = self.load_examples(os.path.join("helper_data","text2sql_examples.json"))
         self.tfidf_vectorizer, self.tfidf_matrix = self.setup_tfidf(self.examples)

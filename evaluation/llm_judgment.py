@@ -35,11 +35,11 @@ class LlmJugment:
             HumanMessage(
                 content=f"""Analyze the relevancy of the generated report based on the initial question, the generated chart, and the generated insight. Assess how accurately and comprehensively it addresses the user's initial question. After your analysis, provide a relevancy score out of 100.
 
-Initial Question: {initial_question}
-Generated Chart: (See attached image)
-Generated Insight: {generated_insight}
+                        Initial Question: {initial_question}
+                        Generated Chart: (See attached image)
+                        Generated Insight: {generated_insight}
 
-Analysis and score (0-100) Relevancy:"""
+                        Analysis and score (0-100) Relevancy:"""
             ),
             HumanMessage(
                 content={"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}}
@@ -60,11 +60,11 @@ Analysis and score (0-100) Relevancy:"""
             HumanMessage(
                 content=f"""Analyze the insightfulness of the generated report, considering the initial question, the generated chart, and the generated insight. Evaluate the depth, usefulness, and actionability of the insights provided. After your analysis, provide an insightfulness score out of 100.
 
-Initial Question: {initial_question}
-Generated Chart: (See attached image)
-Generated Insight: {generated_insight}
+                        Initial Question: {initial_question}
+                        Generated Chart: (See attached image)
+                        Generated Insight: {generated_insight}
 
-Analysis and score (0-100) of the Insightfulness:"""
+                        Analysis and score (0-100) of the Insightfulness:"""
             ),
             HumanMessage(
                 content={"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}}
@@ -74,8 +74,34 @@ Analysis and score (0-100) of the Insightfulness:"""
         results = self.llm.llm.invoke(messages)
         print('### Insightfulness:', results)
         return results.content
+    
+    def eval_visiulization_quality(self):
+        LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
 
-    def eval_quality(self):
+        image_path = self.report["image_path"]
+        base64_image = self.encode_image(image_path)
+        initial_question = self.report["initial_input"]
+        generated_insight = self.report["final_output"]
+
+        messages = [
+            HumanMessage(
+                content=f"""Analyze the visualization quality of the generated chart. Assess the accuracy, clarity, and design of the chart. After your analysis, provide a visualization quality score out of 100.
+
+                        Generated Chart: (See attached image)
+
+                        Analysis and score (0-100) of the
+                        Visualization Quality:"""
+            ),
+            HumanMessage(
+                content={"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}}
+            ),
+        ]
+
+        results = self.llm.llm.invoke(messages)
+        print('### Visualization Quality:', results)
+        return results.content
+    
+    def eval_storytelling_quality(self):
         LoggerManager.log_flow(f"Start with {self.llm.model_name}", node=self.__class__.__name__, state=LogState.START)
 
         image_path = self.report["image_path"]
@@ -87,12 +113,12 @@ Analysis and score (0-100) of the Insightfulness:"""
             HumanMessage(
                 content=f"""Analyze the data storytelling quality of the generated report, considering the initial question, the generated chart, and the generated insight. Evaluate how effectively it combines data and narrative to convey a coherent and engaging story. After your analysis, provide a data storytelling quality score out of 100.
 
-Initial Question: {initial_question}
-Generated Chart: (See attached image)
-Generated Insight: {generated_insight}
+                        Initial Question: {initial_question}
+                        Generated Chart: (See attached image)
+                        Generated Insight: {generated_insight}
 
-Analysis and score (0-100) of the
-Data Storytelling Quality:"""
+                        Analysis and score (0-100) of the
+                        Data Storytelling Quality:"""
             ),
             HumanMessage(
                 content={"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}}
@@ -100,5 +126,5 @@ Data Storytelling Quality:"""
         ]
 
         results = self.llm.llm.invoke(messages)
-        print('### Quality:', results)
+        print('### Data Storytelling Quality:', results)
         return results.content

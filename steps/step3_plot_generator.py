@@ -13,8 +13,8 @@ import re
 
 class PlotGeneratorNode:
     def __init__(self) -> None:
-        self.llm = LLM("togetherAI")
-        # self.llm = LLM("openAI")
+        #self.llm = LLM("togetherAI")
+        self.llm = LLM("openAI")
         # self.llm = LLM("cluade")
 
     def forward(self, state: AgentState):
@@ -33,6 +33,7 @@ class PlotGeneratorNode:
 
             #Tha main scenario is when the CSV file has more than one row
             if num_rows > 1:
+                #print("More than one row")
                 parser = JsonOutputParser(pydantic_object=TextAndCode)
 
                 prompt = PromptTemplate(
@@ -49,7 +50,8 @@ class PlotGeneratorNode:
                 LoggerManager.log_flow(f"Plot code generated:\n```python\n{result['code']}\n```", node=self.__class__.__name__, state=LogState.RESPONSE)
             
             #The edge case is when the CSV file has only one row
-            else:
+            '''else:
+                #print("Only one row")
                 output_parser = StrOutputParser()
                 row = df.to_dict(orient='records')[0]
                 firstRow_text = "Row data: " + ", ".join([f"{col}: {row[col]}" for col in columns]) + "\n"
@@ -61,24 +63,30 @@ class PlotGeneratorNode:
                 chain = prompt | self.llm | output_parser
                 result = chain.invoke({"user_prompt": user_query, "columns_text": columns_text, "firstRow_text": firstRow_text})
                 plot_generator_results["answer"] = result[0]
-                LoggerManager.log_flow(f"Answer generated for single row data:\n{result[0]}", node=self.__class__.__name__, state=LogState.RESPONSE)
-                
+                LoggerManager.log_flow(f"Answer generated for single row data:\n{result[0]}", node=self.__class__.__name__, state=LogState.RESPONSE)'''
+            
+            #print("Before first log:")
             LoggerManager.log_flow(f"State updated with plot generator results:\n{plot_generator_results}", node=self.__class__.__name__)
-
             LoggerManager.log_flow(f"Started", node='PlotCode', state=LogState.START)
             code = plot_generator_results["plot_code"]
             code = re.sub(r"plt\.show\(\)", "", code)
+            print("Before exec:")
             plt.switch_backend('Agg')
             exec(code)
+            print("After exec:")
             plot_id = len(glob("static/plot_*.png"))
             plot_filename = os.path.join("static", f"plot_{plot_id}.png")
             plt.savefig(plot_filename)
             plt.close()
+            #print("!--------")
+            #print(plot_filename)
+            #print("!--------")
             plot_generator_results["plot_filename"] = plot_filename
             state["plot_generator_results"] = plot_generator_results
 
             LoggerManager.log_flow(f"Save plot in: {plot_filename}", node='PlotCode', state=LogState.FINISH)
         except:
+            print("Error!!!!!!!!!!!!!!!!")
             LoggerManager.log_flow_metric(node='PlotCode', state=LogState.ERROR)
         return state
     
@@ -87,8 +95,8 @@ class PlotGeneratorNode:
     
 # Define your desired data structure.
 class TextAndCode(BaseModel):
-    intro: str = Field(description="Short explanation and answer to user prompt to put as plot image header")
-    code: str = Field(description="Python code to generate one plot from the CSV file in 'data.csv' to answer the user query")
+    intro: str = Field(description="Guide how to code just one plot from the CSV file in 'data.csv' to answer the user query")
+    code: str = Field(description="The python code to generate just and only one plot from the CSV file in 'data.csv' to answer the user query")
     
 if __name__ == "__main__":
     c = PlotGeneratorNode()

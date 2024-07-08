@@ -1,6 +1,6 @@
 from typing_extensions import TypedDict
 from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
+from langchain_anthropic import ChatAnthropic # type: ignore
 from langchain_core.messages.base import BaseMessage
 import json
 from langchain_together import ChatTogether
@@ -54,7 +54,7 @@ class LLM:
         )
 
     def init_cluade(self):
-        self.model_name = self.additional_config.get("model", "claude-3-opus-20240229")
+        self.model_name = self.additional_config.get("model", "claude-3-5-sonnet-20240620")
         self.llm = ChatAnthropic(
             model=self.model_name,
             temperature=self.temperature,

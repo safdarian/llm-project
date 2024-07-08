@@ -85,7 +85,8 @@ class LoggerManager:
             plot_filename = report["plot_generator_results"]["plot_filename"]
             copy_file(plot_filename, os.path.join(final_log_directory, 'plot.png'))
             final_output = report["data_storytelling_results"]
-        except KeyError:
+        except:
+            print("Error in saving final IO")
             return
 
         initial_input = report['question']

@@ -12,8 +12,8 @@ from logging_config import LoggerManager, LogState
 
 class DataAnalyticsNode:
     def __init__(self) -> None:
-        self.llm = LLM("togetherAI")
-        # self.llm = LLM("openAI")
+        #self.llm = LLM("togetherAI")
+        self.llm = LLM("openAI")
         # self.llm = LLM("cluade")
 
     def forward(self, state: AgentState):
